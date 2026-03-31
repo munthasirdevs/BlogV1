@@ -5,12 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Masterclass Blog</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd',
+                            400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8',
+                            800: '#1e40af', 900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
     <link rel="stylesheet" href="../css/app.css">
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body class="bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors">
     <div class="flex min-h-screen">
         <!-- Sidebar -->
-        <aside class="w-64 bg-gray-900 text-white fixed h-full">
+        <aside class="w-64 bg-gray-900 dark:bg-gray-950 text-white fixed h-full">
             <div class="p-4">
                 <h2 class="text-xl font-bold mb-6">Admin Panel</h2>
                 <nav class="space-y-2">
@@ -25,7 +50,15 @@
 
         <!-- Main Content -->
         <main class="ml-64 flex-1 p-8">
-            <h1 class="text-3xl font-bold mb-8">Dashboard</h1>
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-3xl font-bold dark:text-gray-100">Dashboard</h1>
+                <!-- Dark Mode Toggle -->
+                <button data-theme-toggle onclick="UI.toggleDarkMode()" class="dark-mode-toggle p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg" aria-label="Toggle dark mode">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                    </svg>
+                </button>
+            </div>
 
             <!-- Stats Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -90,7 +123,7 @@
                     document.getElementById('recent-activity').innerHTML = response.data.recent_activity.slice(0, 5).map(a => `
                         <div class="flex items-center gap-3 py-2">
                             <div class="w-2 h-2 rounded-full bg-blue-500"></div>
-                            <span class="text-sm">${a.user.name} ${a.type.replace('_', ' ')}</span>
+                            <span class="text-sm dark:text-gray-300">${a.user.name} ${a.type.replace('_', ' ')}</span>
                             <span class="text-gray-400 text-xs ml-auto">${UI.formatDate(a.timestamp)}</span>
                         </div>
                     `).join('');
@@ -100,6 +133,7 @@
             }
         }
 
+        UI.initDarkMode();
         loadDashboard();
     </script>
 </body>
