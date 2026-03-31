@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Article - Masterclass Blog</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../css/app.css">
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-40">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <a href="/" class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                    </div>
+                    <span class="text-xl font-bold text-gray-900">Masterclass Blog</span>
+                </a>
+                <div class="flex items-center gap-4">
+                    <a href="/" class="nav-link">Home</a>
+                    <a href="/pages/blog-list.html" class="nav-link">Articles</a>
+                    <a href="/pages/create-post.html" class="btn btn-primary btn-sm" data-auth>Write</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="py-8">
+        <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Article Header -->
+            <div id="article-header" class="mb-8">
+                <!-- Loaded dynamically -->
+            </div>
+
+            <!-- Featured Image -->
+            <div id="featured-image" class="mb-8 rounded-xl overflow-hidden"></div>
+
+            <!-- Article Content -->
+            <div class="card p-6 md:p-10 mb-8">
+                <div id="article-content" class="prose max-w-none">
+                    <!-- Content loaded dynamically -->
+                </div>
+
+                <!-- Tags -->
+                <div id="article-tags" class="flex flex-wrap gap-2 mt-8 pt-6 border-t"></div>
+            </div>
+
+            <!-- Action Bar -->
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center gap-4">
+                    <button id="like-btn" onclick="toggleLike()" class="flex items-center gap-2 text-gray-600 hover:text-red-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                        </svg>
+                        <span id="likes-count">0</span>
+                    </button>
+                    <button id="bookmark-btn" onclick="toggleBookmark()" class="flex items-center gap-2 text-gray-600 hover:text-blue-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                        </svg>
+                        <span>Save</span>
+                    </button>
+                    <button onclick="sharePost()" class="flex items-center gap-2 text-gray-600 hover:text-green-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+                        </svg>
+                        <span>Share</span>
+                    </button>
+                </div>
+                <div id="author-actions" class="hidden">
+                    <a href="/pages/edit-post.html" class="btn btn-secondary btn-sm">Edit</a>
+                    <button onclick="deletePost()" class="btn btn-danger btn-sm">Delete</button>
+                </div>
+            </div>
+
+            <!-- Author Info -->
+            <div id="author-info" class="card p-6 mb-8"></div>
+
+            <!-- Comments Section -->
+            <section class="card p-6 md:p-8">
+                <h2 class="text-2xl font-bold mb-6">
+                    Comments <span id="comments-count" class="text-gray-500 text-lg font-normal">(0)</span>
+                </h2>
+
+                <!-- Comment Form -->
+                <div data-auth class="mb-8">
+                    <form id="comment-form" onsubmit="submitComment(event)">
+                        <textarea id="comment-content" rows="4" 
+                                  class="input mb-3" 
+                                  placeholder="Share your thoughts..."></textarea>
+                        <div class="flex justify-end">
+                            <button type="submit" class="btn btn-primary">Post Comment</button>
+                        </div>
+                    </form>
+                </div>
+                <div data-guest class="mb-8 text-center py-4 bg-gray-50 rounded-lg">
+                    <p class="text-gray-600 mb-2">Want to join the discussion?</p>
+                    <a href="/pages/login.html" class="btn btn-primary btn-sm">Sign in to comment</a>
+                </div>
+
+                <!-- Comments List -->
+                <div id="comments-list" class="space-y-6"></div>
+            </section>
+        </article>
+
+        <!-- Related Posts -->
+        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <h2 class="text-2xl font-bold mb-6">Related Articles</h2>
+            <div id="related-posts" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+        </section>
+    </main>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/blog.js"></script>
+    <script src="../js/comments.js"></script>
+    <script src="../js/ui.js"></script>
+    <script>
+        let currentPost = null;
+        let currentSlug = null;
+
+        authService.init();
+
+        async function loadPost() {
+            const urlParams = new URLSearchParams(window.location.search);
+            currentSlug = urlParams.get('slug');
+
+            if (!currentSlug) {
+                window.location.href = '/pages/blog-list.html';
+                return;
+            }
+
+            const result = await blogService.getPost(currentSlug);
+            
+            if (result.success) {
+                currentPost = result.data;
+                renderPost(currentPost);
+                loadComments();
+            } else {
+                window.location.href = '/pages/blog-list.html';
+            }
+        }
+
+        function renderPost(post) {
+            document.title = `${post.title} - Masterclass Blog`;
+
+            // Header
+            document.getElementById('article-header').innerHTML = `
+                <div class="flex items-center gap-2 mb-4">
+                    <span class="badge-primary">${post.category?.name || 'Uncategorized'}</span>
+                    <span class="text-gray-500">${UI.formatDate(post.published_at)}</span>
+                    <span class="text-gray-500">· ${post.reading_time} min read</span>
+                </div>
+                <h1 class="text-3xl md:text-4xl font-bold mb-4">${UI.escapeHtml(post.title)}</h1>
+                <p class="text-xl text-gray-600">${UI.escapeHtml(post.excerpt || '')}</p>
+                <div class="flex items-center gap-4 mt-6">
+                    <div class="avatar">
+                        ${post.author?.avatar ? `<img src="${post.author.avatar}" alt="${post.author.name}">` : 
+                          `<span class="text-sm font-medium">${post.author?.name?.charAt(0) || '?'}</span>`}
+                    </div>
+                    <div>
+                        <p class="font-medium">${UI.escapeHtml(post.author?.name || 'Anonymous')}</p>
+                        <p class="text-sm text-gray-500">${post.views_count || 0} views</p>
+                    </div>
+                </div>
+            `;
+
+            // Featured Image
+            if (post.featured_image) {
+                document.getElementById('featured-image').innerHTML = `
+                    <img src="${post.featured_image}" alt="${post.title}" class="w-full h-auto">
+                `;
+            }
+
+            // Content
+            document.getElementById('article-content').innerHTML = post.content;
+
+            // Tags
+            if (post.tags?.length) {
+                document.getElementById('article-tags').innerHTML = post.tags.map(tag => 
+                    `<a href="/pages/blog-list.html?tag=${tag.slug}" class="badge bg-gray-100 text-gray-700 hover:bg-blue-100">${tag.name}</a>`
+                ).join('');
+            }
+
+            // Likes & Bookmarks
+            document.getElementById('likes-count').textContent = post.likes_count || 0;
+            document.getElementById('comments-count').textContent = `(${post.comments_count || 0})`;
+
+            if (post.is_liked) {
+                document.getElementById('like-btn').classList.add('text-red-600');
+            }
+            if (post.is_bookmarked) {
+                document.getElementById('bookmark-btn').classList.add('text-blue-600');
+            }
+
+            // Author info
+            document.getElementById('author-info').innerHTML = `
+                <div class="flex items-start gap-4">
+                    <div class="avatar avatar-lg flex-shrink-0">
+                        ${post.author?.avatar ? `<img src="${post.author.avatar}" alt="${post.author.name}">` : 
+                          `<span class="text-lg font-medium">${post.author?.name?.charAt(0) || '?'}</span>`}
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg">${UI.escapeHtml(post.author?.name || 'Anonymous')}</h3>
+                        <p class="text-gray-600">${post.author?.bio || 'Author bio not available'}</p>
+                    </div>
+                </div>
+            `;
+
+            // Show author actions if owner
+            if (authService.getUser()?.id === post.author?.id) {
+                document.getElementById('author-actions').classList.remove('hidden');
+            }
+
+            // Related posts
+            if (post.related_posts?.length) {
+                document.getElementById('related-posts').innerHTML = post.related_posts.map(p => UI.createPostCard(p)).join('');
+            }
+        }
+
+        async function loadComments() {
+            const result = await commentService.getComments(currentPost.id);
+            if (result.success) {
+                document.getElementById('comments-list').innerHTML = result.data.map(c => UI.createComment(c)).join('');
+            }
+        }
+
+        async function submitComment(e) {
+            e.preventDefault();
+            const content = document.getElementById('comment-content').value.trim();
+            
+            if (!content) return;
+
+            const result = await commentService.createComment(currentPost.id, content);
+            
+            if (result.success) {
+                UI.toast('Comment posted!', 'success');
+                document.getElementById('comment-content').value = '';
+                loadComments();
+            } else {
+                UI.toast(result.message, 'error');
+            }
+        }
+
+        async function toggleLike() {
+            if (!authService.isAuthenticated()) {
+                UI.toast('Please login to like posts', 'warning');
+                return;
+            }
+
+            const result = await blogService.toggleLike(currentPost.id);
+            if (result.success) {
+                document.getElementById('likes-count').textContent = result.data.likes_count;
+                document.getElementById('like-btn').classList.toggle('text-red-600');
+            }
+        }
+
+        async function toggleBookmark() {
+            if (!authService.isAuthenticated()) {
+                UI.toast('Please login to save posts', 'warning');
+                return;
+            }
+
+            const result = await blogService.toggleBookmark(currentPost.id);
+            if (result.success) {
+                document.getElementById('bookmark-btn').classList.toggle('text-blue-600');
+                UI.toast(result.data.is_bookmarked ? 'Saved to bookmarks' : 'Removed from bookmarks', 'success');
+            }
+        }
+
+        function sharePost() {
+            const url = window.location.href;
+            navigator.clipboard.writeText(url).then(() => {
+                UI.toast('Link copied to clipboard!', 'success');
+            });
+        }
+
+        async function deletePost() {
+            if (!confirm('Are you sure you want to delete this post?')) return;
+
+            const result = await blogService.deletePost(currentPost.id);
+            if (result.success) {
+                UI.toast('Post deleted', 'success');
+                window.location.href = '/pages/blog-list.html';
+            } else {
+                UI.toast(result.message, 'error');
+            }
+        }
+
+        // Initialize
+        loadPost();
+    </script>
+</body>
+</html>

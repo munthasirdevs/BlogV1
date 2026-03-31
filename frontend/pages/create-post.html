@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Post - Masterclass Blog</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../css/app.css">
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <header class="bg-white shadow-sm sticky top-0 z-40">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <a href="/" class="flex items-center gap-2">
+                    <span class="text-xl font-bold text-gray-900">Masterclass Blog</span>
+                </a>
+                <a href="/pages/blog-list.html" class="btn btn-secondary">Cancel</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-8">Create New Post</h1>
+
+        <form id="post-form" class="card p-6 space-y-6">
+            <div>
+                <label class="label">Title</label>
+                <input type="text" id="title" class="input" placeholder="Enter post title" required>
+            </div>
+
+            <div>
+                <label class="label">Category</label>
+                <select id="category" class="input" required></select>
+            </div>
+
+            <div>
+                <label class="label">Tags</label>
+                <select id="tags" class="input" multiple></select>
+                <p class="text-xs text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple tags</p>
+            </div>
+
+            <div>
+                <label class="label">Featured Image URL</label>
+                <input type="url" id="featured_image" class="input" placeholder="https://example.com/image.jpg">
+            </div>
+
+            <div>
+                <label class="label">Content</label>
+                <textarea id="content" rows="15" class="input font-mono" placeholder="Write your content here..." required></textarea>
+            </div>
+
+            <div>
+                <label class="label">Excerpt (optional)</label>
+                <textarea id="excerpt" rows="3" class="input" placeholder="Brief summary..."></textarea>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <label class="label mb-0">Status:</label>
+                <select id="status" class="input w-auto">
+                    <option value="draft">Draft</option>
+                    <option value="published">Published</option>
+                </select>
+            </div>
+
+            <div class="flex gap-4 pt-4">
+                <button type="submit" class="btn btn-primary btn-lg">Publish Post</button>
+                <button type="button" onclick="saveDraft()" class="btn btn-secondary btn-lg">Save as Draft</button>
+            </div>
+        </form>
+    </main>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/blog.js"></script>
+    <script src="../js/taxonomy.js"></script>
+    <script src="../js/ui.js"></script>
+    <script>
+        authService.requireAuth();
+
+        async function loadCategories() {
+            const result = await taxonomyService.getCategories();
+            if (result.success) {
+                document.getElementById('category').innerHTML = '<option value="">Select a category</option>' + 
+                    result.data.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            }
+        }
+
+        async function loadTags() {
+            const result = await taxonomyService.getTags();
+            if (result.success) {
+                document.getElementById('tags').innerHTML = result.data.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+            }
+        }
+
+        document.getElementById('post-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const tags = Array.from(document.getElementById('tags').selectedOptions).map(o => parseInt(o.value));
+
+            const data = {
+                title: document.getElementById('title').value,
+                category_id: parseInt(document.getElementById('category').value),
+                content: document.getElementById('content').value,
+                excerpt: document.getElementById('excerpt').value || null,
+                featured_image: document.getElementById('featured_image').value || null,
+                tags: tags.length ? tags : null,
+                status: document.getElementById('status').value,
+            };
+
+            const result = await blogService.createPost(data);
+
+            if (result.success) {
+                UI.toast('Post created successfully!', 'success');
+                window.location.href = `/pages/blog-detail.html?slug=${result.data.slug}`;
+            } else {
+                UI.toast(result.message, 'error');
+            }
+        });
+
+        async function saveDraft() {
+            document.getElementById('status').value = 'draft';
+            document.getElementById('post-form').dispatchEvent(new Event('submit'));
+        }
+
+        loadCategories();
+        loadTags();
+    </script>
+</body>
+</html>

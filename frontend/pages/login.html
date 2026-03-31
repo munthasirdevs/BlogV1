@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Masterclass Blog</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../css/app.css">
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center py-12 px-4">
+    <div class="max-w-md w-full">
+        <!-- Logo -->
+        <div class="text-center mb-8">
+            <a href="/" class="inline-flex items-center gap-2">
+                <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                    </svg>
+                </div>
+                <span class="text-2xl font-bold text-gray-900">Masterclass Blog</span>
+            </a>
+            <h1 class="text-3xl font-bold mt-6">Welcome back</h1>
+            <p class="text-gray-600 mt-2">Sign in to your account</p>
+        </div>
+
+        <!-- Login Form -->
+        <div class="card p-8">
+            <form id="login-form" class="space-y-6">
+                <div>
+                    <label for="email" class="label">Email address</label>
+                    <input type="email" id="email" name="email" required 
+                           class="input" placeholder="you@example.com">
+                </div>
+
+                <div>
+                    <label for="password" class="label">Password</label>
+                    <input type="password" id="password" name="password" required 
+                           class="input" placeholder="••••••••">
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <label class="flex items-center">
+                        <input type="checkbox" id="remember" name="remember" class="w-4 h-4 text-blue-600 rounded">
+                        <span class="ml-2 text-sm text-gray-600">Remember me</span>
+                    </label>
+                    <a href="#" class="text-sm text-blue-600 hover:text-blue-700">Forgot password?</a>
+                </div>
+
+                <button type="submit" id="submit-btn" class="btn btn-primary w-full btn-lg">
+                    Sign In
+                </button>
+            </form>
+
+            <div class="mt-6 text-center">
+                <p class="text-gray-600">
+                    Don't have an account? 
+                    <a href="/pages/register.html" class="text-blue-600 font-medium">Sign up</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/ui.js"></script>
+    <script>
+        // Redirect if already logged in
+        authService.requireGuest('/');
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const btn = document.getElementById('submit-btn');
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const remember = document.getElementById('remember').checked;
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner spinner-sm"></span> Signing in...';
+
+            const result = await authService.login(email, password, remember);
+
+            if (result.success) {
+                UI.toast('Login successful!', 'success');
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 500);
+            } else {
+                UI.toast(result.message || 'Login failed', 'error');
+                btn.disabled = false;
+                btn.textContent = 'Sign In';
+            }
+        });
+    </script>
+</body>
+</html>
