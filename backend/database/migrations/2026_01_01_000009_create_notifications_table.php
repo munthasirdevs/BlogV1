@@ -12,9 +12,17 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('type');
             $table->morphs('notifiable');
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
             $table->text('data');
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
+            
+            // Indexes for efficient queries
+            $table->index(['notifiable_id', 'notifiable_type']);
+            $table->index('user_id');
+            $table->index('read_at');
+            $table->index('created_at');
+            $table->index('type');
         });
     }
 

@@ -19,10 +19,30 @@ return new class extends Migration
             $table->string('password');
             $table->string('avatar')->nullable();
             $table->text('bio')->nullable();
-            $table->enum('role', ['user', 'admin'])->default('user');
-            $table->enum('status', ['active', 'banned'])->default('active');
+            $table->enum('role', ['user', 'admin', 'editor', 'moderator'])->default('user');
+            $table->enum('status', ['active', 'banned', 'suspended', 'deleted'])->default('active');
+            
+            // Social links
+            $table->string('website')->nullable();
+            $table->string('twitter')->nullable();
+            $table->string('github')->nullable();
+            $table->string('linkedin')->nullable();
+            $table->string('facebook')->nullable();
+            
+            // Additional profile fields
+            $table->string('location')->nullable();
+            $table->string('timezone')->default('UTC');
+            $table->json('preferences')->nullable();
+            
             $table->rememberToken();
+            $table->softDeletes();
             $table->timestamps();
+            
+            // Indexes for common queries
+            $table->index('email');
+            $table->index('role');
+            $table->index('status');
+            $table->index('created_at');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

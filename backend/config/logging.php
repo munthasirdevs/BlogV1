@@ -3,6 +3,7 @@
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
+use Monolog\Handler\RotatingFileHandler;
 use Monolog\Processor\PsrLogMessageProcessor;
 
 return [
@@ -19,6 +20,40 @@ return [
     */
 
     'default' => env('LOG_CHANNEL', 'stack'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Environment-Specific Logging
+    |--------------------------------------------------------------------------
+    |
+    | Different log configurations for development and production environments.
+    | Development: Uses 'stack' with multiple channels for detailed debugging.
+    | Production: Uses 'daily' with rotation for log management.
+    |
+    */
+
+    'environments' => [
+        'local' => [
+            'channel' => 'stack',
+            'level' => 'debug',
+        ],
+        'development' => [
+            'channel' => 'stack',
+            'level' => 'debug',
+        ],
+        'testing' => [
+            'channel' => 'errorlog',
+            'level' => 'warning',
+        ],
+        'staging' => [
+            'channel' => 'daily',
+            'level' => 'info',
+        ],
+        'production' => [
+            'channel' => 'daily',
+            'level' => 'error',
+        ],
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -63,14 +98,33 @@ return [
             'path' => storage_path('logs/laravel.log'),
             'level' => env('LOG_LEVEL', 'debug'),
             'replace_placeholders' => true,
+            'processors' => [PsrLogMessageProcessor::class],
         ],
 
         'daily' => [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),
             'level' => env('LOG_LEVEL', 'debug'),
-            'days' => env('LOG_DAILY_DAYS', 14),
+            'days' => env('LOG_DAILY_DAYS', 30),
             'replace_placeholders' => true,
+            'processors' => [PsrLogMessageProcessor::class],
+        ],
+
+        'api' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/api.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => env('LOG_DAILY_DAYS', 30),
+            'replace_placeholders' => true,
+            'processors' => [PsrLogMessageProcessor::class],
+        ],
+
+        'database' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/database.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'replace_placeholders' => true,
+            'processors' => [PsrLogMessageProcessor::class],
         ],
 
         'slack' => [

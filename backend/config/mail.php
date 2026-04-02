@@ -100,4 +100,58 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Markdown Mail Settings
+    |--------------------------------------------------------------------------
+    |
+    | If you are using Markdown based email rendering, you may configure your
+    | theme and component paths here, allowing you to customize the design
+    | of the emails. Or, you may simply stick with the Laravel defaults!
+    |
+    */
+
+    'markdown' => [
+        'theme' => 'default',
+
+        'paths' => [
+            resource_path('views/vendor/mail'),
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Newsletter Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for newsletter and bulk email sending.
+    |
+    */
+
+    'newsletter' => [
+        // Rate limiting for bulk emails (emails per minute)
+        'rate_limit' => env('NEWSLETTER_RATE_LIMIT', 100),
+        
+        // Batch size for sending emails
+        'batch_size' => env('NEWSLETTER_BATCH_SIZE', 50),
+        
+        // Delay between batches in seconds
+        'batch_delay' => env('NEWSLETTER_BATCH_DELAY', 60),
+        
+        // Default from address for newsletters
+        'from_address' => env('NEWSLETTER_FROM_ADDRESS', env('MAIL_FROM_ADDRESS', 'newsletter@example.com')),
+        'from_name' => env('NEWSLETTER_FROM_NAME', env('MAIL_FROM_NAME', 'Newsletter')),
+        
+        // Reply-to address
+        'reply_to' => env('NEWSLETTER_REPLY_TO', env('MAIL_FROM_ADDRESS', 'noreply@example.com')),
+        
+        // Track opens and clicks
+        'track_opens' => env('NEWSLETTER_TRACK_OPENS', true),
+        'track_clicks' => env('NEWSLETTER_TRACK_CLICKS', true),
+        
+        // Unsubscribe settings
+        'unsubscribe_header' => env('NEWSLETTER_UNSUBSCRIBE_HEADER', true),
+        'list_unsubscribe' => env('NEWSLETTER_LIST_UNSUBSCRIBE', true),
+    ],
+
 ];

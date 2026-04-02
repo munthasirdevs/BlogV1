@@ -5,6 +5,19 @@ namespace App\Http\Requests\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
 
+/**
+ * Class UpdatePasswordRequest
+ *
+ * Validates requests for updating user password.
+ *
+ * @OA\Schema(
+ *     schema="UpdatePasswordRequest",
+ *     required={"current_password", "password", "password_confirmation"},
+ *     @OA\Property(property="current_password", type="string", format="password", example="OldPass123!"),
+ *     @OA\Property(property="password", type="string", format="password", minLength=8, example="NewSecurePass123!"),
+ *     @OA\Property(property="password_confirmation", type="string", format="password", example="NewSecurePass123!")
+ * )
+ */
 class UpdatePasswordRequest extends FormRequest
 {
     /**
@@ -24,7 +37,15 @@ class UpdatePasswordRequest extends FormRequest
     {
         return [
             'current_password' => ['required', 'string'],
-            'password' => ['required', 'confirmed', Password::defaults()],
+            'password' => [
+                'required', 
+                'confirmed', 
+                Password::min(8)
+                    ->mixedCase()
+                    ->numbers()
+                    ->symbols()
+                    ->uncompromised()
+            ],
         ];
     }
 
@@ -38,6 +59,26 @@ class UpdatePasswordRequest extends FormRequest
             'current_password' => 'Your current password is incorrect.',
             'password.required' => 'Please enter a new password.',
             'password.confirmed' => 'Password confirmation does not match.',
+            'password.min' => 'Password must be at least 8 characters.',
+            'password.uncompromised' => 'The given password has appeared in a data leak. Please choose a different password.',
         ];
+    }
+
+    /**
+     * Configure the validator instance.
+     */
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            // Verify current password is correct
+            if ($this->user() && !\Illuminate\Support\Facades\Hash::check($this->current_password, $this->user()->password)) {
+                $validator->errors()->add('current_password', 'Your current password is incorrect.');
+            }
+
+            // Prevent reusing recent passwords (optional - could be enhanced)
+            if ($this->user() && \Illuminate\Support\Facades\Hash::check($this->password, $this->user()->password)) {
+                $validator->errors()->add('password', 'New password must be different from your current password.');
+            }
+        });
     }
 }

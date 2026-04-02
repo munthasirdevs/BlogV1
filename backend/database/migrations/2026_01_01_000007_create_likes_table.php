@@ -11,11 +11,15 @@ return new class extends Migration
         Schema::create('likes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('post_id')->constrained()->onDelete('cascade');
+            $table->morphs('likeable'); // Creates likeable_id and likeable_type
             $table->timestamps();
-
-            $table->unique(['user_id', 'post_id']);
-            $table->index('post_id');
+            
+            // Unique constraint to prevent duplicate likes
+            $table->unique(['user_id', 'likeable_id', 'likeable_type'], 'unique_like');
+            
+            // Indexes for efficient queries
+            $table->index('user_id');
+            $table->index(['likeable_id', 'likeable_type']);
         });
     }
 

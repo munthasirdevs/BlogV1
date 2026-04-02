@@ -12,10 +12,18 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('post_id')->constrained()->onDelete('cascade');
+            $table->string('collection_name')->default('default'); // For organizing bookmarks
+            $table->text('notes')->nullable();
             $table->timestamps();
-
-            $table->unique(['user_id', 'post_id']);
+            
+            // Unique constraint per user per post per collection
+            $table->unique(['user_id', 'post_id', 'collection_name'], 'unique_bookmark');
+            
+            // Indexes for efficient queries
             $table->index('user_id');
+            $table->index('post_id');
+            $table->index('collection_name');
+            $table->index('created_at');
         });
     }
 

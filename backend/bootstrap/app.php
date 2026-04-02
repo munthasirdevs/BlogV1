@@ -13,9 +13,27 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
+            // Legacy admin check middleware
             'can.admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
+            
+            // Spatie Permission middleware
+            'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'permission' => \App\Http\Middleware\PermissionMiddleware::class,
         ]);
     })
+    ->withProviders([
+        \App\Providers\RepositoryServiceProvider::class,
+    ])
     ->withExceptions(function (Exceptions $exceptions) {
-        //
-    })->create();
+        $exceptions->render(function (Throwable $e, $request) {
+            // Delegate to custom handler
+            $handler = new \App\Exceptions\Handler(app());
+            return $handler->render($request, $e);
+        });
+
+        $exceptions->report(function (Throwable $e) {
+            $handler = new \App\Exceptions\Handler(app());
+            $handler->report($e);
+        });
+    })
+    ->create();
