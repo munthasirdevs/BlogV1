@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-gray-800">
+        <h2 class="text-xl font-semibold leading-tight" style="color: var(--color-text-heading)">
             {{ __('Admin Dashboard') }}
         </h2>
     </x-slot>
@@ -8,42 +8,42 @@
     <div class="py-12">
         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
             <div class="mb-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                <div class="overflow-hidden rounded-lg bg-white shadow-sm">
+                <div class="overflow-hidden rounded-lg shadow-sm" style="background-color: var(--color-surface-card)">
                     <div class="p-6">
-                        <div class="text-sm font-medium text-gray-500">{{ __('Total Posts') }}</div>
+                        <div class="text-sm font-medium" style="color: var(--color-text-muted)">{{ __('Total Posts') }}</div>
                         <div class="mt-2 flex items-baseline">
-                            <span class="text-3xl font-bold text-gray-900">{{ $stats['totalPosts'] }}</span>
+                            <span class="text-3xl font-bold" style="color: var(--color-text-heading)">{{ $stats['totalPosts'] }}</span>
                         </div>
-                        <div class="mt-2 flex gap-4 text-xs text-gray-500">
-                            <span class="text-green-600">{{ __('Published') }}: {{ $stats['publishedPosts'] }}</span>
+                        <div class="mt-2 flex gap-4 text-xs" style="color: var(--color-text-muted)">
+                            <span class="" style="color: var(--color-success)">{{ __('Published') }}: {{ $stats['publishedPosts'] }}</span>
                             <span class="text-yellow-600">{{ __('Drafts') }}: {{ $stats['draftPosts'] }}</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="overflow-hidden rounded-lg bg-white shadow-sm">
+                <div class="overflow-hidden rounded-lg shadow-sm" style="background-color: var(--color-surface-card)">
                     <div class="p-6">
-                        <div class="text-sm font-medium text-gray-500">{{ __('Categories') }}</div>
-                        <div class="mt-2 text-3xl font-bold text-gray-900">{{ $stats['totalCategories'] }}</div>
+                        <div class="text-sm font-medium" style="color: var(--color-text-muted)">{{ __('Categories') }}</div>
+                        <div class="mt-2 text-3xl font-bold" style="color: var(--color-text-heading)">{{ $stats['totalCategories'] }}</div>
                     </div>
                 </div>
 
-                <div class="overflow-hidden rounded-lg bg-white shadow-sm">
+                <div class="overflow-hidden rounded-lg shadow-sm" style="background-color: var(--color-surface-card)">
                     <div class="p-6">
-                        <div class="text-sm font-medium text-gray-500">{{ __('Tags') }}</div>
-                        <div class="mt-2 text-3xl font-bold text-gray-900">{{ $stats['totalTags'] }}</div>
+                        <div class="text-sm font-medium" style="color: var(--color-text-muted)">{{ __('Tags') }}</div>
+                        <div class="mt-2 text-3xl font-bold" style="color: var(--color-text-heading)">{{ $stats['totalTags'] }}</div>
                     </div>
                 </div>
 
-                <div class="overflow-hidden rounded-lg bg-white shadow-sm">
+                <div class="overflow-hidden rounded-lg shadow-sm" style="background-color: var(--color-surface-card)">
                     <div class="p-6">
-                        <div class="text-sm font-medium text-gray-500">{{ __('Comments') }}</div>
+                        <div class="text-sm font-medium" style="color: var(--color-text-muted)">{{ __('Comments') }}</div>
                         <div class="mt-2 flex items-baseline">
-                            <span class="text-3xl font-bold text-gray-900">{{ $stats['totalComments'] }}</span>
+                            <span class="text-3xl font-bold" style="color: var(--color-text-heading)">{{ $stats['totalComments'] }}</span>
                         </div>
                         @if($stats['pendingComments'] > 0)
                             <div class="mt-2">
-                                <span class="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">
+                                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium" style="background-color: var(--color-warning-bg); color: var(--color-warning)">
                                     {{ $stats['pendingComments'] }} {{ __('pending') }}
                                 </span>
                             </div>
@@ -51,53 +51,53 @@
                     </div>
                 </div>
 
-                <div class="overflow-hidden rounded-lg bg-white shadow-sm">
+                <div class="overflow-hidden rounded-lg shadow-sm" style="background-color: var(--color-surface-card)">
                     <div class="p-6">
-                        <div class="text-sm font-medium text-gray-500">{{ __('Users') }}</div>
-                        <div class="mt-2 text-3xl font-bold text-gray-900">{{ $stats['totalUsers'] }}</div>
+                        <div class="text-sm font-medium" style="color: var(--color-text-muted)">{{ __('Users') }}</div>
+                        <div class="mt-2 text-3xl font-bold" style="color: var(--color-text-heading)">{{ $stats['totalUsers'] }}</div>
                     </div>
                 </div>
 
-                <div class="overflow-hidden rounded-lg bg-white shadow-sm">
+                <div class="overflow-hidden rounded-lg shadow-sm" style="background-color: var(--color-surface-card)">
                     <div class="p-6">
-                        <div class="text-sm font-medium text-gray-500">{{ __('Total Views') }}</div>
-                        <div class="mt-2 text-3xl font-bold text-gray-900">{{ number_format($stats['totalViews']) }}</div>
+                        <div class="text-sm font-medium" style="color: var(--color-text-muted)">{{ __('Total Views') }}</div>
+                        <div class="mt-2 text-3xl font-bold" style="color: var(--color-text-heading)">{{ number_format($stats['totalViews']) }}</div>
                     </div>
                 </div>
             </div>
 
-            <div class="overflow-hidden rounded-lg bg-white shadow-sm">
-                <div class="border-b border-gray-200 px-6 py-4">
-                    <h3 class="text-base font-semibold text-gray-900">{{ __('Recent Published Posts') }}</h3>
+            <div class="overflow-hidden rounded-lg shadow-sm" style="background-color: var(--color-surface-card)">
+                <div class="border-b px-6 py-4" style="border-color: var(--color-border)">
+                    <h3 class="text-base font-semibold" style="color: var(--color-text-heading)">{{ __('Recent Published Posts') }}</h3>
                 </div>
                 <div class="p-6">
                     @if($recentPosts->isNotEmpty())
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
+                        <table class="min-w-full divide-y" style="border-color: var(--color-border)">
+                            <thead style="background-color: var(--color-surface-elevated)">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('Title') }}</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('Category') }}</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('Author') }}</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('Published') }}</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('Views') }}</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style="color: var(--color-text-muted)">{{ __('Title') }}</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style="color: var(--color-text-muted)">{{ __('Category') }}</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style="color: var(--color-text-muted)">{{ __('Author') }}</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style="color: var(--color-text-muted)">{{ __('Published') }}</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style="color: var(--color-text-muted)">{{ __('Views') }}</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-200 bg-white">
+                            <tbody class="divide-y" style="border-color: var(--color-border); background-color: var(--color-surface-card)">
                                 @foreach($recentPosts as $post)
                                     <tr>
                                         <td class="px-6 py-4">
-                                            <div class="text-sm font-medium text-gray-900">{{ $post->title }}</div>
+                                            <div class="text-sm font-medium" style="color: var(--color-text-heading)">{{ $post->title }}</div>
                                         </td>
-                                        <td class="whitespace-nowrap px-6 py-4">
-                                            <div class="text-sm text-gray-500">{{ $post->category?->name ?? '—' }}</div>
+                                        <td class="whitespace-nowrap px-6 py-4" style="color: var(--color-text-muted)">
+                                            <div class="text-sm" style="color: var(--color-text-muted)">{{ $post->category?->name ?? '—' }}</div>
                                         </td>
-                                        <td class="whitespace-nowrap px-6 py-4">
-                                            <div class="text-sm text-gray-500">{{ $post->author?->name ?? '—' }}</div>
+                                        <td class="whitespace-nowrap px-6 py-4" style="color: var(--color-text-muted)">
+                                            <div class="text-sm" style="color: var(--color-text-muted)">{{ $post->author?->name ?? '—' }}</div>
                                         </td>
-                                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm" style="color: var(--color-text-muted)">
                                             {{ $post->published_at?->format('M d, Y') }}
                                         </td>
-                                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm" style="color: var(--color-text-muted)">
                                             {{ $post->views_count ?? 0 }}
                                         </td>
                                     </tr>
@@ -105,7 +105,7 @@
                             </tbody>
                         </table>
                     @else
-                        <p class="text-sm text-gray-500">{{ __('No published posts yet.') }}</p>
+                        <p class="text-sm" style="color: var(--color-text-muted)">{{ __('No published posts yet.') }}</p>
                     @endif
                 </div>
             </div>
