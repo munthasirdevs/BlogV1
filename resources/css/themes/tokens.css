@@ -1,0 +1,75 @@
+:root {
+  /* Primary / Brand — Indigo */
+  --color-primary-50: #eef2ff;
+  --color-primary-100: #e0e7ff;
+  --color-primary-200: #c7d2fe;
+  --color-primary-300: #a5b4fc;
+  --color-primary-400: #818cf8;
+  --color-primary-500: #6366f1;
+  --color-primary-600: #4f46e5;
+  --color-primary-700: #4338ca;
+  --color-primary-800: #3730a3;
+  --color-primary-900: #312e81;
+
+  /* Semantic */
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-info: #3b82f6;
+  --color-success-bg: #ecfdf5;
+  --color-warning-bg: #fffbeb;
+  --color-error-bg: #fef2f2;
+  --color-info-bg: #eff6ff;
+
+  /* Surface */
+  --color-surface: #ffffff;
+  --color-surface-elevated: #f9fafb;
+  --color-surface-card: #ffffff;
+  --color-surface-modal: #ffffff;
+  --color-surface-sidebar: #f8fafc;
+  --color-surface-header: #ffffff;
+
+  /* Text */
+  --color-text-heading: #111827;
+  --color-text-body: #374151;
+  --color-text-muted: #6b7280;
+  --color-text-disabled: #d1d5db;
+  --color-text-link: #6366f1;
+
+  /* Border */
+  --color-border: #e5e7eb;
+  --color-border-light: #f3f4f6;
+  --color-border-ring: #6366f1;
+}
+
+.dark {
+  /* Semantic */
+  --color-success: #34d399;
+  --color-warning: #fbbf24;
+  --color-error: #f87171;
+  --color-info: #60a5fa;
+  --color-success-bg: #064e3b;
+  --color-warning-bg: #78350f;
+  --color-error-bg: #7f1d1d;
+  --color-info-bg: #1e3a5f;
+
+  /* Surface */
+  --color-surface: #0f172a;
+  --color-surface-elevated: #1e293b;
+  --color-surface-card: #1e293b;
+  --color-surface-modal: #1e293b;
+  --color-surface-sidebar: #0f172a;
+  --color-surface-header: #0f172a;
+
+  /* Text */
+  --color-text-heading: #f1f5f9;
+  --color-text-body: #cbd5e1;
+  --color-text-muted: #64748b;
+  --color-text-disabled: #475569;
+  --color-text-link: #818cf8;
+
+  /* Border */
+  --color-border: #334155;
+  --color-border-light: #1e293b;
+  --color-border-ring: #818cf8;
+}
