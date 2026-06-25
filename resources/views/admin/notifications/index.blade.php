@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center justify-between">
-            <h2 class="text-xl font-semibold leading-tight text-gray-800">
+            <h2 class="text-xl font-semibold leading-tight" style="color: var(--color-text-heading)">
                 {{ __('Notifications') }}
             </h2>
             <form action="{{ route('admin.notifications.markAllRead') }}" method="POST" class="inline-block">
@@ -15,26 +15,26 @@
 
     <div class="py-12">
         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
+            <div class="overflow-hidden shadow-sm sm:rounded-lg" style="background-color: var(--color-surface-card)">
+                <div class="p-6" style="color: var(--color-text-heading)">
                     @if($notifications->isNotEmpty())
                         <div class="space-y-4">
                             @foreach($notifications as $notification)
-                                <div class="flex items-start justify-between rounded-lg border border-gray-200 p-4 {{ $notification->read_at ? '' : 'bg-indigo-50' }}">
+                                <div class="flex items-start justify-between rounded-lg border p-4 {{ $notification->read_at ? '' : 'bg-indigo-50' }}" style="border-color: var(--color-border); {{ $notification->read_at ? '' : 'background-color: var(--color-primary-50)' }}">
                                     <div class="flex-1">
                                         <div class="flex items-center gap-2">
                                             @unless($notification->read_at)
-                                                <span class="h-2 w-2 rounded-full bg-indigo-600"></span>
+                                                <span class="h-2 w-2 rounded-full" style="background-color: var(--color-primary-600)"></span>
                                             @endunless
-                                            <p class="text-sm font-medium text-gray-900">{{ $notification->data['title'] ?? __('Notification') }}</p>
+                                            <p class="text-sm font-medium" style="color: var(--color-text-heading)">{{ $notification->data['title'] ?? __('Notification') }}</p>
                                         </div>
-                                        <p class="mt-1 text-sm text-gray-600">{{ $notification->data['message'] ?? '' }}</p>
-                                        <p class="mt-1 text-xs text-gray-400">{{ $notification->created_at->diffForHumans() }}</p>
+                                        <p class="mt-1 text-sm" style="color: var(--color-text-body)">{{ $notification->data['message'] ?? '' }}</p>
+                                        <p class="mt-1 text-xs" style="color: var(--color-text-muted)">{{ $notification->created_at->diffForHumans() }}</p>
                                     </div>
                                     @unless($notification->read_at)
                                         <form action="{{ route('admin.notifications.markRead', $notification->id) }}" method="POST" class="ml-4">
                                             @csrf
-                                            <button type="submit" class="text-xs text-indigo-600 hover:text-indigo-900">{{ __('Mark Read') }}</button>
+                                            <button type="submit" class="text-xs hover:text-indigo-900" style="color: var(--color-primary-600)">{{ __('Mark Read') }}</button>
                                         </form>
                                     @endunless
                                 </div>
@@ -45,7 +45,7 @@
                             {{ $notifications->links() }}
                         </div>
                     @else
-                        <p class="text-center text-sm text-gray-500">{{ __('No notifications.') }}</p>
+                        <p class="text-center text-sm" style="color: var(--color-text-muted)">{{ __('No notifications.') }}</p>
                     @endif
                 </div>
             </div>
