@@ -1,48 +1,38 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight" style="color: var(--color-text-heading)">
-            {{ __('Blog') }}
-        </h2>
-    </x-slot>
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ __('Blog') }} — {{ config('app.name', 'XenonBlog') }}</title>
 
-    <div class="py-12">
-        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                @forelse($posts as $post)
-                    <div class="overflow-hidden rounded-lg shadow" style="background-color: var(--color-surface-card)">
-                        @if($post->featured_image)
-                            <img src="{{ $post->featured_image }}" alt="{{ $post->title }}" class="h-48 w-full object-cover">
-                        @endif
-                        <div class="p-6">
-                            @if($post->category)
-                                <span class="text-xs font-semibold uppercase tracking-wider" style="color: var(--color-primary-600)">{{ $post->category->name }}</span>
-                            @endif
-                            <h3 class="mt-2 text-lg font-semibold" style="color: var(--color-text-heading)">
-                                <a href="{{ route('blog.show', $post->slug) }}" style="color: var(--color-primary-600)">{{ $post->title }}</a>
-                            </h3>
-                            @if($post->excerpt)
-                                <p class="mt-2 text-sm" style="color: var(--color-text-body)">{{ Str::limit($post->excerpt, 150) }}</p>
-                            @endif
-                            <div class="mt-4 flex items-center justify-between text-xs" style="color: var(--color-text-muted)">
-                                <span>{{ $post->author?->name ?? '—' }}</span>
-                                <div class="flex items-center gap-2">
-                                    <span>{{ $post->published_at?->format('M d, Y') }}</span>
-                                    <span>&middot;</span>
-                                    <span>{{ $post->reading_time }} {{ __('min read') }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                @empty
-                    <div class="col-span-full text-center text-sm" style="color: var(--color-text-muted)">
-                        {{ __('No posts found.') }}
-                    </div>
-                @endforelse
-            </div>
+    <script>
+        (function() {
+            var theme = localStorage.getItem('theme');
+            if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
 
-            <div class="mt-8">
-                {{ $posts->links() }}
-            </div>
-        </div>
-    </div>
-</x-app-layout>
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body class="font-sans antialiased" style="background-color: var(--color-surface); color: var(--color-text-body); padding-top: 64px;">
+
+    <x-public-header active="home" />
+
+    <main>
+        <x-hero-section :trendingTopics="$tags" />
+        <x-featured-posts :featuredPosts="$featuredPosts" />
+        <x-trending-posts :trendingPosts="$trendingPosts" />
+        <x-categories-grid :categories="$categories" />
+        <x-latest-articles :posts="$posts" />
+        <x-newsletter-section />
+    </main>
+
+    <x-public-footer :categories="$categories" />
+
+</body>
+</html>
