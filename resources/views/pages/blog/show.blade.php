@@ -118,10 +118,10 @@
         <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 pb-16">
             <div class="flex gap-12">
 
-                {{-- Sticky TOC (Desktop) --}}
-                @if($post->tags->isNotEmpty())
-                <aside class="hidden lg:block shrink-0 w-48">
-                    <div class="sticky top-24 space-y-4">
+                {{-- Sticky Sidebar (Desktop) --}}
+                <aside class="hidden lg:block shrink-0 w-56">
+                    <div class="sticky top-24 space-y-6">
+                        @if($post->tags->isNotEmpty())
                         <div>
                             <h4 class="text-xs font-semibold uppercase tracking-wider mb-3" style="color: var(--color-text-muted);">Tags</h4>
                             <div class="flex flex-wrap gap-2">
@@ -130,9 +130,11 @@
                                 @endforeach
                             </div>
                         </div>
+                        @endif
+
+                        <x-category-widget :categories="$categories" />
                     </div>
                 </aside>
-                @endif
 
                 {{-- Content --}}
                 <article class="flex-1 min-w-0">
@@ -141,7 +143,7 @@
                     @endif
 
                     <div class="article-body">
-                        {!! nl2br(e($post->content)) !!}
+                        {!! $post->content !!}
                     </div>
 
                     {{-- Author Card --}}

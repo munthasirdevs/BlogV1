@@ -92,7 +92,7 @@ class FeaturedImageService
     {
         $sizePaths = [
             'thumbnail' => $image->thumbnail_path,
-            'small' => null,
+            'small' => $image->medium_path,
             'medium' => $image->medium_path,
             'large' => $image->large_path,
         ];
@@ -123,17 +123,20 @@ class FeaturedImageService
             ? Storage::url($fallbackPath)
             : Storage::url($image->original_path);
 
-        $blur = $image->blur_placeholder ? "background-image: url('{$image->blur_placeholder}'); background-size: cover;" : '';
-        $alt = htmlspecialchars($image->alt_text ?: $image->title ?: 'Featured image');
+        $blurStyle = $image->blur_placeholder ? 'background-image: url(\'' . e($image->blur_placeholder) . '\'); background-size: cover;' : '';
+        $alt = e($image->alt_text ?: $image->title ?: 'Featured image');
+        $escapedWebpUrl = e($webpUrl ?? '');
+        $escapedFallbackUrl = e($fallbackUrl);
+        $escapedSrcset = e($srcset);
 
         $html = '<picture>';
         if ($webpUrl) {
-            $html .= '<source srcset="' . $webpUrl . '" type="image/webp">';
+            $html .= '<source srcset="' . $escapedWebpUrl . '" type="image/webp">';
         }
         if ($srcset) {
-            $html .= '<source srcset="' . $srcset . '">';
+            $html .= '<source srcset="' . $escapedSrcset . '">';
         }
-        $html .= '<img src="' . $fallbackUrl . '" alt="' . $alt . '" loading="lazy" style="' . $blur . '">';
+        $html .= '<img src="' . $escapedFallbackUrl . '" alt="' . $alt . '" loading="lazy" style="' . $blurStyle . '">';
         $html .= '</picture>';
 
         return $html;
