@@ -3,10 +3,14 @@
 namespace App\Services\SEO;
 
 use App\Models\Post;
+use App\Services\AI\AIService;
 use Illuminate\Support\Str;
 
 class SEOService
 {
+    public function __construct(
+        protected AIService $aiService
+    ) {}
     public function analyzePost(Post $post): array
     {
         $titleScore = $this->scoreTitle($post);
@@ -292,5 +296,94 @@ class SEOService
         }
 
         return $recommendations;
+    }
+
+    public function calculateReadability(string $content): array
+    {
+        $text = strip_tags($content);
+        $words = str_word_count($text);
+        $sentences = preg_split('/[.!?]+/', $text);
+        $sentences = array_filter($sentences, fn($s) => trim($s) !== '');
+        $sentenceCount = count($sentences);
+
+        $avgWordsPerSentence = $sentenceCount > 0 ? $words / $sentenceCount : 0;
+        $syllables = $this->countSyllables($text);
+        $avgSyllablesPerWord = $words > 0 ? $syllables / $words : 0;
+
+        $fleschScore = 206.835 - (1.015 * $avgWordsPerSentence) - (84.6 * $avgSyllablesPerWord);
+        $fleschScore = max(0, min(100, $fleschScore));
+
+        $paragraphs = explode("\n\n", $text);
+        $paragraphs = array_filter($paragraphs, fn($p) => trim($p) !== '');
+        $avgParagraphLength = count($paragraphs) > 0 ? $words / count($paragraphs) : 0;
+
+        $longWords = count(array_filter(str_word_count($text, 1), fn($w) => strlen($w) > 6));
+
+        return [
+            'score' => round($fleschScore, 1),
+            'level' => match (true) {
+                $fleschScore >= 90 => 'Very Easy',
+                $fleschScore >= 80 => 'Easy',
+                $fleschScore >= 70 => 'Fairly Easy',
+                $fleschScore >= 60 => 'Standard',
+                $fleschScore >= 50 => 'Fairly Difficult',
+                $fleschScore >= 30 => 'Difficult',
+                default => 'Very Difficult',
+            },
+            'word_count' => $words,
+            'sentence_count' => $sentenceCount,
+            'avg_words_per_sentence' => round($avgWordsPerSentence, 1),
+            'avg_syllables_per_word' => round($avgSyllablesPerWord, 1),
+            'paragraph_count' => count($paragraphs),
+            'avg_paragraph_length' => round($avgParagraphLength, 1),
+            'long_word_count' => $longWords,
+            'long_word_percentage' => $words > 0 ? round($longWords / $words * 100, 1) : 0,
+            'suggestions' => $this->generateReadabilitySuggestions($fleschScore, $avgWordsPerSentence, $avgParagraphLength),
+        ];
+    }
+
+    public function aiOptimizeContent(string $content, string $type = 'seo'): string
+    {
+        $prompts = [
+            'seo' => 'Rewrite this content to improve its SEO performance. Keep all key information but improve keyword placement, heading structure, and readability. Return only the improved content:',
+            'readability' => 'Rewrite this to be more readable. Use shorter sentences, simpler words, and better paragraph structure. Keep all key information:',
+        ];
+
+        $prompt = ($prompts[$type] ?? $prompts['seo']) . "\n\n" . $content;
+        return $this->aiService->generateContent($prompt, 'article') ?: $content;
+    }
+
+    private function countSyllables(string $text): int
+    {
+        $words = str_word_count(mb_strtolower($text), 1);
+        $count = 0;
+        foreach ($words as $word) {
+            $vowels = preg_match_all('/[aeiouy]+/', $word);
+            if ($vowels === 0) $vowels = 1;
+            if (str_ends_with($word, 'e')) $vowels--;
+            if (str_ends_with($word, 'le') && strlen($word) > 2) $vowels++;
+            $count += max(1, $vowels);
+        }
+        return $count;
+    }
+
+    private function generateReadabilitySuggestions(float $score, float $avgSentenceLen, float $avgParagraphLen): array
+    {
+        $suggestions = [];
+
+        if ($score < 50) {
+            $suggestions[] = 'Content is difficult to read. Use shorter sentences and simpler words.';
+        }
+        if ($avgSentenceLen > 25) {
+            $suggestions[] = 'Average sentence length is ' . round($avgSentenceLen) . ' words. Aim for 15-20 words per sentence.';
+        }
+        if ($avgParagraphLen > 100) {
+            $suggestions[] = 'Paragraphs are too long (avg ' . round($avgParagraphLen) . ' words). Break them into smaller chunks.';
+        }
+        if ($score >= 70) {
+            $suggestions[] = 'Content has good readability.';
+        }
+
+        return $suggestions;
     }
 }
