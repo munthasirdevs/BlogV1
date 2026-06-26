@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\Category;
 use App\Services\Cache\FullPageCacheService;
+use App\Services\CacheService;
 use Illuminate\Support\Facades\App;
 
 class CategoryObserver
@@ -29,5 +30,8 @@ class CategoryObserver
     {
         $cache = App::make(FullPageCacheService::class);
         $cache->invalidateByPrefix('global', $category->tenant_id);
+
+        $cacheService = App::make(CacheService::class);
+        $cacheService->forget('categories');
     }
 }

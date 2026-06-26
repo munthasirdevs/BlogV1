@@ -5,6 +5,7 @@ namespace App\Observers;
 use App\Models\Post;
 use App\Notifications\ContentApprovalNotification;
 use App\Services\Cache\FullPageCacheService;
+use App\Services\CacheService;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
@@ -34,6 +35,10 @@ class PostObserver
     {
         $cache = App::make(FullPageCacheService::class);
         $cache->invalidateByPrefix('global', $post->tenant_id);
+
+        $cacheService = App::make(CacheService::class);
+        $cacheService->forget('recent_posts');
+        $cacheService->forget('featured_posts');
     }
 
     public function deleted(Post $post): void
