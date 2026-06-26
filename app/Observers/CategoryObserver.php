@@ -15,6 +15,11 @@ class CategoryObserver
         $this->invalidateCache($category);
     }
 
+    public function saved(Category $category): void
+    {
+        $this->invalidateCache($category);
+    }
+
     public function deleted(Category $category): void
     {
         $this->invalidateCache($category);
