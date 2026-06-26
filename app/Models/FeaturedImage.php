@@ -47,6 +47,25 @@ class FeaturedImage extends Model
         return $this->morphTo();
     }
 
+    public function scopeForModel($query, string $modelType, int $modelId)
+    {
+        return $query->where('model_type', $modelType)->where('model_id', $modelId);
+    }
+
+    public function scopeSearch($query, string $term)
+    {
+        return $query->where(function ($q) use ($term) {
+            $q->where('title', 'like', "%{$term}%")
+              ->orWhere('alt_text', 'like', "%{$term}%")
+              ->orWhere('caption', 'like', "%{$term}%");
+        });
+    }
+
+    public function scopeWithSeoScore($query, int $min = 0)
+    {
+        return $query->where('seo_score', '>=', $min);
+    }
+
     protected static function boot(): void
     {
         parent::boot();

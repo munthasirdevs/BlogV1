@@ -134,6 +134,121 @@ class Post extends Model
         return $query->where('author_id', $authorId);
     }
 
+    public function scopePublic($query)
+    {
+        return $query->where('visibility', 'public');
+    }
+
+    public function scopeVisibleByUser($query, ?\App\Models\User $user = null)
+    {
+        if ($user) {
+            return $query->where(function ($q) use ($user) {
+                $q->where('visibility', 'public')
+                  ->orWhere('author_id', $user->id);
+            });
+        }
+        return $query->where('visibility', 'public');
+    }
+
+    public function related(int $limit = 4): \Illuminate\Support\Collection
+    {
+        try {
+            $graphLinks = \App\Models\ContentLink::where('source_type', 'post')
+                ->where('source_id', $this->id)
+                ->where('target_type', 'post')
+                ->orderBy('weight_score', 'desc')
+                ->take($limit)
+                ->pluck('target_id');
+
+            if ($graphLinks->isNotEmpty()) {
+                $posts = self::published()->whereIn('id', $graphLinks)->with('category', 'author')->get();
+                if ($posts->isNotEmpty()) return $posts;
+            }
+        } catch (\Exception $e) {
+        }
+
+        $tagIds = $this->tags()->pluck('tags.id')->toArray();
+
+        $related = self::published()
+            ->where('id', '!=', $this->id)
+            ->where(function ($q) use ($tagIds) {
+                if (!empty($tagIds)) {
+                    $q->whereHas('tags', fn($t) => $t->whereIn('tags.id', $tagIds));
+                }
+                if ($this->category_id) {
+                    $q->orWhere('category_id', $this->category_id);
+                }
+            })
+            ->with('category', 'author')
+            ->orderBy('published_at', 'desc')
+            ->take($limit)
+            ->get();
+
+        if ($related->count() < $limit) {
+            $extra = self::published()
+                ->where('id', '!=', $this->id)
+                ->whereNotIn('id', $related->pluck('id'))
+                ->with('category', 'author')
+                ->orderBy('views_count', 'desc')
+                ->take($limit - $related->count())
+                ->get();
+            $related = $related->concat($extra);
+        }
+
+        return $related;
+    }
+
+    public function getTrendingScore(): float
+    {
+        $daysSincePublished = max(1, now()->diffInDays($this->published_at ?? $this->created_at));
+        return ($this->views_count / $daysSincePublished) + ($this->shares_count * 2) + ($this->comments()->count() * 3);
+    }
+
+    public function generateExcerpt(int $length = 160): string
+    {
+        if (!empty($this->excerpt)) return $this->excerpt;
+        $text = strip_tags($this->content ?? '');
+        return mb_strlen($text) > $length
+            ? mb_substr($text, 0, $length) . '...'
+            : $text;
+    }
+
+    public static function generateUniqueSlug(string $title, ?int $excludeId = null): string
+    {
+        $slug = Str::slug($title);
+        $base = $slug;
+        $counter = 1;
+        while (self::where('slug', $slug)->when($excludeId, fn($q, $id) => $q->where('id', '!=', $id))->exists()) {
+            $slug = $base . '-' . $counter++;
+        }
+        return $slug;
+    }
+
+    public function duplicate(int $newAuthorId): self
+    {
+        $copy = $this->replicate();
+        $copy->title = $this->title . ' (Copy)';
+        $copy->slug = self::generateUniqueSlug($copy->title);
+        $copy->status = 'draft';
+        $copy->author_id = $newAuthorId;
+        $copy->published_at = null;
+        $copy->scheduled_at = null;
+        $copy->is_scheduled = false;
+        $copy->views_count = 0;
+        $copy->likes_count = 0;
+        $copy->shares_count = 0;
+        $copy->save();
+
+        foreach ($this->tags as $tag) {
+            $copy->tags()->attach($tag->id, [
+                'relevance_score' => $tag->pivot->relevance_score,
+                'created_at' => now(),
+            ]);
+        }
+
+        return $copy;
+    }
+
     public function getRouteKeyName(): string
     {
         return 'slug';
