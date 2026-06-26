@@ -16,3 +16,7 @@ Artisan::command('search:rebuild {--tenant= : Tenant ID to rebuild for}', functi
     $count = $indexer->rebuildIndex($tenantId);
     $this->info("Search index rebuilt: {$count} posts indexed.");
 })->purpose('Rebuild the search index');
+
+use Illuminate\Support\Facades\Schedule;
+
+Schedule::command('images:process-pending')->everyFiveMinutes();

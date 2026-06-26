@@ -53,8 +53,29 @@ class MediaProcessingService
                 $variantImage = $this->imageManager->read($fullPath);
                 $variantImage->scale(width: $size)->toWebp(80)->save($variantPath);
             }
+
+            $media->update([
+                'variants' => [
+                    'thumbnail' => Storage::url($dir . '/' . $filename . '_thumb.webp'),
+                    'small' => Storage::url($dir . '/' . $filename . '_small.webp'),
+                    'medium' => Storage::url($dir . '/' . $filename . '_medium.webp'),
+                ],
+                'placeholder_blur' => $this->generateLqip($fullPath),
+            ]);
         } catch (\Exception $e) {
             Log::warning('Image optimization failed', ['media_id' => $media->id, 'error' => $e->getMessage()]);
+        }
+    }
+
+    private function generateLqip(string $fullPath): string
+    {
+        try {
+            $image = $this->imageManager->read($fullPath);
+            $image->scale(width: 20);
+            $encoded = (string) $image->toWebp(30);
+            return 'data:image/webp;base64,' . base64_encode($encoded);
+        } catch (\Exception $e) {
+            return '';
         }
     }
 

@@ -42,6 +42,7 @@ class MediaFile extends Model
     {
         return [
             'ai_tags' => 'json',
+            'variants' => 'json',
             'is_featured' => 'boolean',
         ];
     }
