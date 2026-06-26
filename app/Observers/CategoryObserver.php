@@ -3,16 +3,26 @@
 namespace App\Observers;
 
 use App\Models\Category;
+use App\Services\Cache\FullPageCacheService;
+use Illuminate\Support\Facades\App;
 
 class CategoryObserver
 {
     public function created(Category $category): void
     {
         $category->updateQuietly(['posts_count' => 0]);
+
+        $this->invalidateCache($category);
     }
 
     public function deleted(Category $category): void
     {
-        // No action needed — category is gone, posts_count is meaningless
+        $this->invalidateCache($category);
+    }
+
+    private function invalidateCache(Category $category): void
+    {
+        $cache = App::make(FullPageCacheService::class);
+        $cache->invalidateByPrefix('global', $category->tenant_id);
     }
 }

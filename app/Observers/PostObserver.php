@@ -4,6 +4,8 @@ namespace App\Observers;
 
 use App\Models\Post;
 use App\Notifications\ContentApprovalNotification;
+use App\Services\Cache\FullPageCacheService;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -26,6 +28,18 @@ class PostObserver
         if (empty($post->uuid)) {
             $post->uuid = (string) Str::uuid();
         }
+    }
+
+    public function saved(Post $post): void
+    {
+        $cache = App::make(FullPageCacheService::class);
+        $cache->invalidateByPrefix('global', $post->tenant_id);
+    }
+
+    public function deleted(Post $post): void
+    {
+        $cache = App::make(FullPageCacheService::class);
+        $cache->invalidateByPrefix('global', $post->tenant_id);
     }
 
     public function updated(Post $post): void

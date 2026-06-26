@@ -23,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'security.headers' => \App\Http\Middleware\ApplySecurityHeaders::class,
             'tenant' => \App\Http\Middleware\IdentifyTenant::class,
             'tenant.validate' => \App\Http\Middleware\ValidateTenantContext::class,
+            'full-page-cache' => \App\Http\Middleware\FullPageCache::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
