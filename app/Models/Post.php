@@ -39,6 +39,7 @@ class Post extends Model
         'views_count',
         'likes_count',
         'shares_count',
+        'comments_count',
         'seo_score',
         'ai_score',
     ];
@@ -50,6 +51,7 @@ class Post extends Model
             'is_scheduled' => 'boolean',
             'published_at' => 'datetime',
             'scheduled_at' => 'datetime',
+            'comments_count' => 'integer',
         ];
     }
 

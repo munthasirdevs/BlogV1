@@ -29,6 +29,7 @@ class Category extends Model
         'lang',
         'access_level',
         'article_count',
+        'posts_count',
         'created_by',
         'updated_by',
     ];
@@ -37,6 +38,7 @@ class Category extends Model
     {
         return [
             'featured' => 'boolean',
+            'posts_count' => 'integer',
         ];
     }
 

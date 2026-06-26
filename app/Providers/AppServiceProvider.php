@@ -8,9 +8,11 @@ use App\Events\PostWorkflowChanged;
 use App\Listeners\SendCommentSubmittedNotification;
 use App\Listeners\SendPostPublishedNotification;
 use App\Models\Category;
+use App\Models\Comment;
 use App\Models\Post;
 use App\Models\Tag;
 use App\Observers\CategoryObserver;
+use App\Observers\CommentObserver;
 use App\Observers\PostObserver;
 use App\Observers\TagObserver;
 use App\Services\AI\AIService;
@@ -39,6 +41,7 @@ class AppServiceProvider extends ServiceProvider
 
         Post::observe(PostObserver::class);
         Tag::observe(TagObserver::class);
+        Comment::observe(CommentObserver::class);
 
         $catObserver = new CategoryObserver();
         Post::created(fn($p) => $catObserver->postCreated($p));

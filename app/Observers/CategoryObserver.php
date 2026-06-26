@@ -11,7 +11,7 @@ class CategoryObserver
 {
     public function created(Category $category): void
     {
-        $this->clearCache();
+        $category->updateQuietly(['posts_count' => $category->posts()->count()]);
     }
 
     public function updated(Category $category): void
@@ -21,7 +21,7 @@ class CategoryObserver
 
     public function deleted(Category $category): void
     {
-        $this->clearCache();
+        // Category deleted — no action needed, posts handle their own count
     }
 
     public function restored(Category $category): void
