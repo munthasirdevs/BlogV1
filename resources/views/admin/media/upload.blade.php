@@ -20,7 +20,7 @@
 
                         <div class="mb-4">
                             <label for="folder_id" class="block text-sm font-medium" style="color: var(--color-text-body)">{{ __('Folder') }}</label>
-                            <select name="folder_id" id="folder_id" class="mt-1 block w-full rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" style="border-color: var(--color-border)"
+                            <select name="folder_id" id="folder_id" class="mt-1 block w-full rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" style="border-color: var(--color-border)">
                                 <option value="">{{ __('Root') }}</option>
                                 @foreach($folders as $folder)
                                     <option value="{{ $folder->id }}" {{ old('folder_id') == $folder->id ? 'selected' : '' }}>{{ $folder->name }}</option>

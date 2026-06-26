@@ -9,6 +9,7 @@ use App\Services\Media\MediaService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class MediaController extends Controller
@@ -85,6 +86,67 @@ class MediaController extends Controller
 
         return redirect()->route('admin.media.index')
             ->with('success', 'File deleted successfully.');
+    }
+
+    public function uploadZip(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'zip_file' => ['required', 'file', 'mimes:zip', 'max:51200'],
+            'folder_id' => ['nullable', 'exists:media_folders,id'],
+        ]);
+
+        $results = $this->mediaService->uploadZip(
+            $request->file('zip_file'),
+            $request->input('folder_id'),
+            auth()->id()
+        );
+
+        $message = $results['uploaded'] . ' files uploaded.';
+        if ($results['skipped'] > 0) $message .= ' ' . $results['skipped'] . ' duplicates skipped.';
+        if (!empty($results['errors'])) $message .= ' ' . count($results['errors']) . ' errors.';
+
+        return redirect()->route('admin.media.index')->with('success', $message);
+    }
+
+    public function aiGenerateMetadata(MediaFile $medium): JsonResponse
+    {
+        $result = $this->mediaService->generateAiMetadata($medium);
+        return response()->json(['success' => true, 'data' => $result]);
+    }
+
+    public function bulkDelete(Request $request): RedirectResponse
+    {
+        $ids = $request->input('ids', []);
+
+        if (empty($ids)) {
+            return redirect()->route('admin.media.index')
+                ->with('error', 'No files selected for deletion.');
+        }
+
+        $ids = json_decode($ids, true);
+
+        if (!is_array($ids) || empty($ids)) {
+            return redirect()->route('admin.media.index')
+                ->with('error', 'Invalid file selection.');
+        }
+
+        $files = MediaFile::whereIn('id', $ids)->get();
+        $count = 0;
+
+        foreach ($files as $file) {
+            try {
+                $this->mediaService->delete($file);
+                $count++;
+            } catch (\Exception $e) {
+                Log::error('Bulk delete failed for media file', [
+                    'id' => $file->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        return redirect()->route('admin.media.index')
+            ->with('success', $count . ' file(s) deleted successfully.');
     }
 
     public function upload(Request $request): JsonResponse

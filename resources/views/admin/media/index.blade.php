@@ -48,14 +48,20 @@
                     <div class="overflow-hidden rounded-lg shadow-sm" style="background-color: var(--color-surface-card)">
                         <div class="border-b p-4" style="border-color: var(--color-border)">
                             <div class="flex items-center gap-4">
-                                <input type="text" id="search" placeholder="{{ __('Search files...') }}" class="block w-full max-w-xs rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" style="border-color: var(--color-border)"
-                                <select id="type-filter" class="rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" style="border-color: var(--color-border)"
-                                    <option value="">{{ __('All Types') }}</option>
-                                    <option value="image">{{ __('Images') }}</option>
-                                    <option value="video">{{ __('Videos') }}</option>
-                                    <option value="document">{{ __('Documents') }}</option>
-                                    <option value="audio">{{ __('Audio') }}</option>
-                                </select>
+                                <form method="GET" action="{{ route('admin.media.index') }}" class="flex items-center gap-2">
+                                    <input type="search" name="search" value="{{ request('search') }}" placeholder="{{ __('Search files...') }}" class="block w-full max-w-xs rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" style="border-color: var(--color-border)">
+                                    <select name="type" class="rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" style="border-color: var(--color-border)">
+                                        <option value="">{{ __('All Types') }}</option>
+                                        <option value="image" {{ request('type') === 'image' ? 'selected' : '' }}>{{ __('Images') }}</option>
+                                        <option value="video" {{ request('type') === 'video' ? 'selected' : '' }}>{{ __('Videos') }}</option>
+                                        <option value="document" {{ request('type') === 'document' ? 'selected' : '' }}>{{ __('Documents') }}</option>
+                                        <option value="audio" {{ request('type') === 'audio' ? 'selected' : '' }}>{{ __('Audio') }}</option>
+                                    </select>
+                                    <button type="submit" class="inline-flex items-center rounded-md px-3 py-2 text-xs font-semibold text-white" style="background-color: var(--color-primary-600)">{{ __('Filter') }}</button>
+                                    @if(request()->anyFilled(['search', 'type']))
+                                    <a href="{{ route('admin.media.index') }}" class="text-xs" style="color: var(--color-text-muted)">{{ __('Clear') }}</a>
+                                    @endif
+                                </form>
                                 @if($files->count())
                                     <button id="bulk-delete" class="inline-flex items-center rounded-md bg-red-600 px-3 py-2 text-xs font-semibold uppercase tracking-widest text-white hover:bg-red-500 disabled:opacity-50" disabled>
                                         {{ __('Delete Selected') }}
@@ -140,8 +146,8 @@
                     const ids = Array.from(checked).map(cb => cb.value);
                     const form = document.createElement('form');
                     form.method = 'POST';
-                    form.action = '{{ route("admin.media.index") }}';
-                    form.innerHTML = '@csrf @method("DELETE") <input type="hidden" name="ids" value="' + JSON.stringify(ids) + '">';
+                    form.action = '{{ route("admin.media.bulk-delete") }}';
+                    form.innerHTML = '@csrf <input type="hidden" name="ids" value="' + JSON.stringify(ids) + '">';
                     document.body.appendChild(form);
                     form.submit();
                 });

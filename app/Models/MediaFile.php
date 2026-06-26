@@ -35,6 +35,7 @@ class MediaFile extends Model
         'optimization_status',
         'ai_tags',
         'hash_signature',
+        'disk',
     ];
 
     protected function casts(): array
