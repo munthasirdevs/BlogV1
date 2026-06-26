@@ -39,7 +39,7 @@
                     <div class="flex items-end gap-1" style="height: 200px;">
                         @foreach($data['chartData'] as $date => $count)
                             <div class="flex flex-1 flex-col items-center">
-                                <div class="w-full rounded-t" style="background-color: var(--color-primary-500)" hover:bg-indigo-600 style="height: {{ ($count / $maxChart) * 180 }}px; min-height: {{ $count > 0 ? '2px' : '0' }};" title="{{ $date }}: {{ $count }}"></div>
+                                <div class="w-full rounded-t hover:opacity-80" style="background-color: var(--color-primary-500); height: {{ ($count / $maxChart) * 180 }}px; min-height: {{ $count > 0 ? '2px' : '0' }};" title="{{ $date }}: {{ $count }}"></div>
                                 @if($loop->iteration % 5 === 0 || $loop->last)
                                     <span class="mt-1 text-xs" style="color: var(--color-text-muted)">{{ \Carbon\Carbon::parse($date)->format('M d') }}</span>
                                 @endif

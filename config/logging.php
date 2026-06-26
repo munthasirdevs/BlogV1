@@ -58,6 +58,12 @@ return [
             'ignore_exceptions' => false,
         ],
 
+        'observability' => [
+            'driver' => 'stack',
+            'channels' => ['single', 'system'],
+            'ignore_exceptions' => false,
+        ],
+
         'single' => [
             'driver' => 'single',
             'path' => storage_path('logs/laravel.log'),
@@ -135,6 +141,12 @@ return [
             'path' => storage_path('logs/ai.log'),
             'level' => env('LOG_LEVEL', 'debug'),
             'days' => 90,
+        ],
+
+        'system' => [
+            'driver' => 'monolog',
+            'handler' => \App\Logging\SystemLogHandler::class,
+            'level' => env('LOG_LEVEL', 'warning'),
         ],
 
         'emergency' => [
