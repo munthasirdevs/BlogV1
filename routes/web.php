@@ -2,7 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::redirect('/', '/blog');
+Route::get('/', [App\Http\Controllers\Public\BlogController::class, 'index'])->name('home');
+Route::get('/health', App\Http\Controllers\HealthController::class);
+Route::get('/system/status', [App\Http\Controllers\SystemStatusController::class, 'index']);
+
+Route::get('/blog', function () { return redirect('/'); })->name('blog.index');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -10,7 +14,6 @@ Route::get('/dashboard', function () {
 
 // Blog routes
 Route::prefix('blog')->name('blog.')->group(function () {
-    Route::get('/', [App\Http\Controllers\Public\BlogController::class, 'index'])->name('index');
     Route::get('/{slug}', [App\Http\Controllers\Public\BlogController::class, 'show'])->name('show');
 });
 
@@ -37,5 +40,12 @@ Route::post('/comments', [App\Http\Controllers\Public\CommentController::class, 
 
 Route::post('/newsletter/subscribe', [App\Http\Controllers\Public\NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
 Route::get('/newsletter/verify/{token}', [App\Http\Controllers\Public\NewsletterController::class, 'verify'])->name('newsletter.verify');
+
+// Profile routes
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [App\Http\Controllers\ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
 require __DIR__.'/admin.php';
