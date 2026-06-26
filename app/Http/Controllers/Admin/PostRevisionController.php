@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\PostRevision;
+use App\Models\SeoMeta;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class PostRevisionController extends Controller
@@ -52,6 +54,11 @@ class PostRevisionController extends Controller
             );
         }
 
+        $revisions = $post->revisions()
+            ->with('editor')
+            ->orderBy('revision_number', 'desc')
+            ->get();
+
         return view('admin.posts.revisions', compact('post', 'revision', 'revisions', 'diffs'));
     }
 
@@ -77,6 +84,23 @@ class PostRevisionController extends Controller
             'excerpt' => $revision->excerpt_snapshot,
             'content' => $revision->content_snapshot,
         ]);
+
+        if ($revision->seo_snapshot) {
+            $post->seo()->updateOrCreate(
+                ['seoable_id' => $post->id, 'seoable_type' => Post::class],
+                [
+                    'meta_title' => $revision->seo_snapshot['meta_title'] ?? $post->title,
+                    'meta_description' => $revision->seo_snapshot['meta_description'] ?? mb_substr(strip_tags($revision->content_snapshot ?? ''), 0, 160),
+                ]
+            );
+
+            if (!empty($revision->seo_snapshot['meta_title']) && mb_strlen($revision->seo_snapshot['meta_title']) > 60) {
+                Log::warning('SEO warning: restored meta_title exceeds 60 chars', ['post_id' => $post->id]);
+            }
+            if (!empty($revision->seo_snapshot['meta_description']) && mb_strlen($revision->seo_snapshot['meta_description']) > 160) {
+                Log::warning('SEO warning: restored meta_description exceeds 160 chars', ['post_id' => $post->id]);
+            }
+        }
 
         return redirect()->route('admin.posts.edit', $post)
             ->with('success', 'Post restored to revision #' . $revision->revision_number . '.');

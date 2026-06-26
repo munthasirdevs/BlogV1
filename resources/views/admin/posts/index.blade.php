@@ -20,19 +20,20 @@
                         </div>
                     @endif
 
-                    <div class="mb-4 flex items-center gap-4">
-                        <input type="text" id="search" placeholder="{{ __('Search posts...') }}" class="block w-full max-w-xs rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                        <select id="category-filter" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                            <option value="">{{ __('All Categories') }}</option>
-                        </select>
-                        <select id="status-filter" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <form method="GET" action="{{ route('admin.posts.index') }}" class="mb-4 flex items-center gap-4">
+                        <input type="search" name="search" value="{{ request('search') }}" placeholder="{{ __('Search posts...') }}" class="block w-full max-w-xs rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <select name="status" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                             <option value="">{{ __('All Statuses') }}</option>
-                            <option value="draft">{{ __('Draft') }}</option>
-                            <option value="published">{{ __('Published') }}</option>
-                            <option value="scheduled">{{ __('Scheduled') }}</option>
-                            <option value="archived">{{ __('Archived') }}</option>
+                            <option value="draft" {{ request('status') === 'draft' ? 'selected' : '' }}>{{ __('Draft') }}</option>
+                            <option value="published" {{ request('status') === 'published' ? 'selected' : '' }}>{{ __('Published') }}</option>
+                            <option value="scheduled" {{ request('status') === 'scheduled' ? 'selected' : '' }}>{{ __('Scheduled') }}</option>
+                            <option value="archived" {{ request('status') === 'archived' ? 'selected' : '' }}>{{ __('Archived') }}</option>
                         </select>
-                    </div>
+                        <button type="submit" class="inline-flex items-center rounded-md px-3 py-2 text-xs font-semibold text-white" style="background-color: var(--color-primary-600)">{{ __('Filter') }}</button>
+                        @if(request()->anyFilled(['search', 'status']))
+                        <a href="{{ route('admin.posts.index') }}" class="text-xs" style="color: var(--color-text-muted)">{{ __('Clear') }}</a>
+                        @endif
+                    </form>
 
                     <table class="min-w-full divide-y" style="border-color: var(--color-border)">
                         <thead style="background-color: var(--color-surface-elevated)">
@@ -70,7 +71,11 @@
                                         {{ $post->published_at ? $post->published_at->format('M d, Y') : '—' }}
                                     </td>
                                     <td class="whitespace-nowrap px-6 py-4 text-sm font-medium">
-                                        <a href="{{ route('admin.posts.edit', $post) }}" class="hover:text-indigo-900" style="color: var(--color-primary-600)">{{ __('Edit') }}</a>
+                                        <a href="{{ route('admin.posts.edit', $post) }}" style="color: var(--color-primary-600)">{{ __('Edit') }}</a>
+                                        <form action="{{ route('admin.posts.duplicate', $post) }}" method="POST" class="inline-block">
+                                            @csrf
+                                            <button type="submit" class="ml-2 hover:text-amber-900" style="color: var(--color-warning)">{{ __('Duplicate') }}</button>
+                                        </form>
                                         <form action="{{ route('admin.posts.destroy', $post) }}" method="POST" class="inline-block">
                                             @csrf
                                             @method('DELETE')

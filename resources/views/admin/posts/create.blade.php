@@ -79,7 +79,7 @@
                             <select name="visibility" id="visibility" class="mt-1 block w-full rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" style="border-color: var(--color-border)">
                                 <option value="public" {{ old('visibility') == 'public' ? 'selected' : '' }}>{{ __('Public') }}</option>
                                 <option value="private" {{ old('visibility') == 'private' ? 'selected' : '' }}>{{ __('Private') }}</option>
-                                <option value="password" {{ old('visibility') == 'password' ? 'selected' : '' }}>{{ __('Password Protected') }}</option>
+                                <option value="unlisted" {{ old('visibility') == 'unlisted' ? 'selected' : '' }}>{{ __('Unlisted') }}</option>
                             </select>
                             @error('visibility') <p class="mt-1 text-sm" style="color: var(--color-error)">{{ $message }}</p> @enderror
                         </div>
