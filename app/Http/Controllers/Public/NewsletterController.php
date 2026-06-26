@@ -44,7 +44,7 @@ class NewsletterController extends Controller
             'verification_token' => null,
         ]);
 
-        return redirect()->route('home')
+        return redirect('/blog')
             ->with('success', 'Your email has been verified. Thank you for subscribing!');
     }
 
@@ -58,7 +58,7 @@ class NewsletterController extends Controller
             'unsubscribed_at' => now(),
         ]);
 
-        return redirect()->route('home')
+        return redirect('/blog')
             ->with('success', 'You have been unsubscribed successfully.');
     }
 }

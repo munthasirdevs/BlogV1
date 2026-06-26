@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use App\Services\CacheService;
+use Illuminate\Support\Facades\Cache;
 
 trait HasCacheKeys
 {
@@ -51,5 +52,19 @@ trait HasCacheKeys
         static::deleted(function ($model) {
             $model->invalidateOnDelete();
         });
+    }
+
+    protected function flushCacheTags(array $tags): void
+    {
+        try {
+            if (config('cache.default') === 'redis' || config('cache.default') === 'memcached') {
+                Cache::tags($tags)->flush();
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning('Cache tag flush not supported', [
+                'driver' => config('cache.default'),
+                'tags' => $tags,
+            ]);
+        }
     }
 }

@@ -18,11 +18,11 @@ class AIController extends Controller
 
     public function index(): View
     {
-        $generations = AiGeneration::with('user')
+        $history = AiGeneration::with('user')
             ->orderBy('id', 'desc')
             ->paginate(20);
 
-        return view('admin.ai.index', compact('generations'));
+        return view('admin.ai.index', compact('history'));
     }
 
     public function generate(Request $request): RedirectResponse
@@ -48,10 +48,6 @@ class AIController extends Controller
 
     public function history(): View
     {
-        $generations = AiGeneration::with('user')
-            ->orderBy('id', 'desc')
-            ->paginate(20);
-
-        return view('admin.ai.history', compact('generations'));
+        return $this->index();
     }
 }

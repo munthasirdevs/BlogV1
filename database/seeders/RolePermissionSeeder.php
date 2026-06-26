@@ -22,6 +22,8 @@ class RolePermissionSeeder extends Seeder
             'schedule_posts',
             'archive_posts',
             'feature_posts',
+            'view_post_revisions',
+            'restore_post_revisions',
             // Categories
             'create_categories',
             'edit_categories',
@@ -188,12 +190,16 @@ class RolePermissionSeeder extends Seeder
             'create_posts',
         ]);
 
-        $adminUser = User::create([
-            'name' => 'Admin',
-            'email' => 'admin@blogv1.com',
-            'password' => bcrypt('password'),
-        ]);
+        $adminUser = User::firstOrCreate(
+            ['email' => 'admin@blogv1.com'],
+            [
+                'name' => 'Admin',
+                'password' => bcrypt('password'),
+            ]
+        );
 
-        $adminUser->assignRole('super-admin');
+        if (!$adminUser->hasRole('super-admin')) {
+            $adminUser->assignRole('super-admin');
+        }
     }
 }
