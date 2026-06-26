@@ -43,10 +43,6 @@ class AppServiceProvider extends ServiceProvider
         Tag::observe(TagObserver::class);
         Comment::observe(CommentObserver::class);
 
-        $catObserver = new CategoryObserver();
-        Post::created(fn($p) => $catObserver->postCreated($p));
-        Post::updated(fn($p) => $catObserver->postUpdated($p));
-        Post::deleted(fn($p) => $catObserver->postDeleted($p));
         Category::observe(CategoryObserver::class);
     }
 }
