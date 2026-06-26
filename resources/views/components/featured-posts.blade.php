@@ -26,7 +26,7 @@
             <a href="{{ route('blog.show', $post->slug) }}" class="group relative col-span-1 lg:col-span-2 overflow-hidden rounded-2xl transition-all duration-500" style="background-color: var(--color-surface-card); border: 1px solid var(--color-border);">
                 <div class="aspect-[16/10] lg:aspect-[21/9] overflow-hidden">
                     @if($post->featured_image)
-                        <img src="{{ $post->featured_image }}" alt="{{ $post->title }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                        <img src="{{ $post->featured_image }}" alt="{{ $post->title }}" width="768" height="432" decoding="async" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" style="aspect-ratio: 16/9;">
                     @else
                         <div class="w-full h-full flex items-center justify-center" style="background: linear-gradient(135deg, var(--color-primary-900), var(--color-primary-700));">
                             <span class="text-6xl font-bold text-white/20">{{ strtoupper(substr($post->title, 0, 1)) }}</span>
@@ -65,7 +65,7 @@
                 <a href="{{ route('blog.show', $post->slug) }}" class="group relative overflow-hidden rounded-2xl transition-all duration-500 flex-1" style="background-color: var(--color-surface-card); border: 1px solid var(--color-border);">
                     <div class="aspect-[16/9] overflow-hidden">
                         @if($post->featured_image)
-                            <img src="{{ $post->featured_image }}" alt="{{ $post->title }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                            <img src="{{ $post->featured_image }}" alt="{{ $post->title }}" width="768" height="432" loading="lazy" decoding="async" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" style="aspect-ratio: 16/9;">
                         @else
                             <div class="w-full h-full flex items-center justify-center" style="background: linear-gradient(135deg, var(--color-primary-800), var(--color-primary-600));">
                                 <span class="text-4xl font-bold text-white/20">{{ strtoupper(substr($post->title, 0, 1)) }}</span>
@@ -94,7 +94,7 @@
                 <a href="{{ route('blog.show', $third->slug) }}" class="group relative overflow-hidden rounded-2xl transition-all duration-500 flex-1" style="background-color: var(--color-surface-card); border: 1px solid var(--color-border);">
                     <div class="aspect-[16/9] overflow-hidden">
                         @if($third->featured_image)
-                            <img src="{{ $third->featured_image }}" alt="{{ $third->title }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                            <img src="{{ $third->featured_image }}" alt="{{ $third->title }}" width="768" height="432" loading="lazy" decoding="async" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" style="aspect-ratio: 16/9;">
                         @else
                             <div class="w-full h-full flex items-center justify-center" style="background: linear-gradient(135deg, var(--color-primary-800), var(--color-primary-600));">
                                 <span class="text-4xl font-bold text-white/20">{{ strtoupper(substr($third->title, 0, 1)) }}</span>

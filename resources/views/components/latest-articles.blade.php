@@ -30,7 +30,7 @@
                 {{-- Image --}}
                 <a href="{{ route('blog.show', $post->slug) }}" class="aspect-[4/3] overflow-hidden relative">
                     @if($post->featured_image)
-                        <img src="{{ $post->featured_image }}" alt="{{ $post->title }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                        <img src="{{ $post->featured_image }}" alt="{{ $post->title }}" width="768" height="432" loading="lazy" decoding="async" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" style="aspect-ratio: 16/9;">
                     @else
                         <div class="w-full h-full flex items-center justify-center" style="background: linear-gradient(135deg, var(--color-primary-100), var(--color-primary-50));">
                             <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--color-primary-300);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>
