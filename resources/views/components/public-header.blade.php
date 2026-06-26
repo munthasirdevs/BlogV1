@@ -23,6 +23,40 @@
                 <nav class="hidden lg:flex items-center gap-1">
                     <a href="{{ route('blog.index') }}" class="px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200" :class="'{{ $active }}' === 'home' ? 'text-white' : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100'" :style="'{{ $active }}' === 'home' ? 'background-color: var(--color-primary-600);' : ''">{{ __('Home') }}</a>
                     <a href="{{ route('blog.index') }}" class="px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200" :class="'{{ $active }}' === 'blog' ? 'text-white' : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100'" :style="'{{ $active }}' === 'blog' ? 'background-color: var(--color-primary-600);' : ''">{{ __('Blog') }}</a>
+                    <div x-data="{ catOpen: false }" class="relative">
+                        <button @click="catOpen = !catOpen" @click.away="catOpen = false" class="px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 inline-flex items-center gap-1 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100">
+                            {{ __('Categories') }}
+                            <svg class="w-3 h-3" :class="{'rotate-180': catOpen}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        <div x-show="catOpen" x-cloak @click.away="catOpen = false"
+                             class="absolute z-50 mt-1 w-[600px] rounded-xl shadow-xl py-4 px-4"
+                             style="background-color: var(--color-surface-card); border: 1px solid var(--color-border);">
+                            @php $megaParents = \App\Models\Category::published()->whereNull('parent_id')->with(['children' => fn($q) => $q->published()->orderBy('sort_order')])->orderBy('sort_order')->orderBy('name')->get(); @endphp
+                            <div class="grid grid-cols-3 gap-4">
+                                @foreach($megaParents as $megaParent)
+                                <div>
+                                    <a href="{{ route('category.show', $megaParent->slug) }}" @click="catOpen = false"
+                                       class="flex items-center gap-2 text-sm font-bold mb-2 hover:underline"
+                                       style="color: var(--color-text-heading);">
+                                        @if($megaParent->color)<span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: {{ $megaParent->color }}"></span>@endif
+                                        @if($megaParent->icon){{ $megaParent->icon }}@endif
+                                        {{ $megaParent->name }}
+                                    </a>
+                                    @if($megaParent->children->isNotEmpty())
+                                    <div class="space-y-0.5">
+                                        @foreach($megaParent->children as $megaChild)
+                                        <a href="{{ route('category.show', $megaChild->slug) }}" @click="catOpen = false"
+                                           class="block text-sm pl-6 hover:underline" style="color: var(--color-text-body);">
+                                            {{ $megaChild->name }}
+                                        </a>
+                                        @endforeach
+                                    </div>
+                                    @endif
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
                     <a href="{{ route('about') }}" class="px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200" :class="'{{ $active }}' === 'about' ? 'text-white' : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100'" :style="'{{ $active }}' === 'about' ? 'background-color: var(--color-primary-600);' : ''">{{ __('About') }}</a>
                     <a href="{{ route('contact') }}" class="px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200" :class="'{{ $active }}' === 'contact' ? 'text-white' : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100'" :style="'{{ $active }}' === 'contact' ? 'background-color: var(--color-primary-600);' : ''">{{ __('Contact') }}</a>
                 </nav>
@@ -91,6 +125,21 @@
         <div class="mx-auto max-w-7xl px-4 py-4 space-y-1">
             <a href="{{ route('blog.index') }}" class="block px-4 py-3 rounded-lg text-sm font-medium transition-colors" :class="'{{ $active }}' === 'home' ? 'text-white' : 'text-gray-700 dark:text-gray-300'" :style="'{{ $active }}' === 'home' ? 'background-color: var(--color-primary-600);' : ''">{{ __('Home') }}</a>
             <a href="{{ route('blog.index') }}" class="block px-4 py-3 rounded-lg text-sm font-medium transition-colors" :class="'{{ $active }}' === 'blog' ? 'text-white' : 'text-gray-700 dark:text-gray-300'" :style="'{{ $active }}' === 'blog' ? 'background-color: var(--color-primary-600);' : ''">{{ __('Blog') }}</a>
+            <div x-data="{ catOpenMobile: false }">
+                <button @click="catOpenMobile = !catOpenMobile" class="flex items-center justify-between w-full px-4 py-3 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {{ __('Categories') }}
+                    <svg class="w-4 h-4" :class="{'rotate-180': catOpenMobile}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                <div x-show="catOpenMobile" class="pl-6 space-y-1">
+                    @php $mobileCats = \App\Models\Category::published()->orderBy('sort_order')->orderBy('name')->get(); @endphp
+                    @foreach($mobileCats as $mc)
+                    <a href="{{ route('category.show', $mc->slug) }}" @click="mobileOpen = false"
+                       class="block px-4 py-2 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-slate-800">
+                        @if($mc->icon){{ $mc->icon }} @endif{{ $mc->name }}
+                    </a>
+                    @endforeach
+                </div>
+            </div>
             <a href="{{ route('about') }}" class="block px-4 py-3 rounded-lg text-sm font-medium transition-colors" :class="'{{ $active }}' === 'about' ? 'text-white' : 'text-gray-700 dark:text-gray-300'" :style="'{{ $active }}' === 'about' ? 'background-color: var(--color-primary-600);' : ''">{{ __('About') }}</a>
             <a href="{{ route('contact') }}" class="block px-4 py-3 rounded-lg text-sm font-medium transition-colors" :class="'{{ $active }}' === 'contact' ? 'text-white' : 'text-gray-700 dark:text-gray-300'" :style="'{{ $active }}' === 'contact' ? 'background-color: var(--color-primary-600);' : ''">{{ __('Contact') }}</a>
             <hr class="my-2" style="border-color: var(--color-border);">

@@ -13,7 +13,7 @@
         </div>
         @if ($icon)
             <div class="p-3 rounded-lg" style="background-color: var(--color-primary-100); color: var(--color-primary-600);">
-                {!! $icon !!}
+                {{ $icon }}
             </div>
         @endif
     </div>

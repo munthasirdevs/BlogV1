@@ -12,5 +12,5 @@ return [
         'auth' => env('AUTH_RATE_LIMIT', 5),
         'ai' => env('AI_RATE_LIMIT', 10),
     ],
-    'content_security_policy' => env('CSP_ENABLED', false),
+    'content_security_policy' => env('CSP_ENABLED', true),
 ];
