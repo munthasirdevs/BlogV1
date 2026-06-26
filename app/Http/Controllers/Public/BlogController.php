@@ -14,13 +14,13 @@ class BlogController extends Controller
     {
         $featuredPosts = Post::published()
             ->where('is_featured', true)
-            ->with('author', 'category')
+            ->with('author', 'category', 'tags')
             ->orderBy('published_at', 'desc')
             ->take(3)
             ->get();
 
         $posts = Post::published()
-            ->with('author', 'category')
+            ->with('author', 'category', 'tags')
             ->orderBy('published_at', 'desc')
             ->paginate(12);
 
@@ -30,13 +30,13 @@ class BlogController extends Controller
             ->get();
 
         $trendingPosts = Post::published()
-            ->with('author', 'category')
+            ->with('author', 'category', 'tags')
             ->orderBy('views_count', 'desc')
             ->take(4)
             ->get();
 
         $recentPosts = Post::published()
-            ->with('author')
+            ->with('author', 'category', 'tags')
             ->orderBy('published_at', 'desc')
             ->take(3)
             ->get();
@@ -54,7 +54,7 @@ class BlogController extends Controller
     {
         $post = Post::published()
             ->where('slug', $slug)
-            ->with('author', 'category', 'tags', 'seo', 'metrics')
+            ->with('author', 'category', 'tags', 'seo', 'metrics', 'media')
             ->firstOrFail();
 
         $post->increment('views_count');
@@ -62,7 +62,7 @@ class BlogController extends Controller
         $relatedPosts = Post::published()
             ->where('category_id', $post->category_id)
             ->where('id', '!=', $post->id)
-            ->with('author', 'category')
+            ->with('author', 'category', 'tags')
             ->orderBy('published_at', 'desc')
             ->take(3)
             ->get();
@@ -73,7 +73,7 @@ class BlogController extends Controller
             ->get();
 
         $recentPosts = Post::published()
-            ->with('author')
+            ->with('author', 'category', 'tags')
             ->orderBy('published_at', 'desc')
             ->take(3)
             ->get();

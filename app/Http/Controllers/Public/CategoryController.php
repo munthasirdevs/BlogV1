@@ -21,7 +21,7 @@ class CategoryController extends Controller
             ->with('children', 'seo', 'parent')
             ->firstOrFail();
 
-        $query = $category->posts()->published()->with('tags', 'author');
+        $query = $category->posts()->published()->with('tags', 'author', 'media');
 
         if ($author = $request->get('author')) {
             $query->whereHas('author', fn($q) => $q->where('name', 'like', "%{$author}%"));
@@ -51,7 +51,7 @@ class CategoryController extends Controller
         $featuredPosts = $category->posts()
             ->published()
             ->where('is_featured', true)
-            ->with('tags')
+            ->with('tags', 'media')
             ->orderBy('published_at', 'desc')
             ->take(3)
             ->get();
