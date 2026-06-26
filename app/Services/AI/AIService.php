@@ -102,7 +102,21 @@ class AIService
                 'heading_structure' => 0,
                 'content_length' => 0,
                 'engagement_potential' => 0,
-                'suggestions' => [],
+                'suggestions' => ['Unable to analyze content via AI. Please try again.'],
+            ];
+        }
+
+        $parsed = json_decode($response, true);
+
+        if (json_last_error() === JSON_ERROR_NONE && isset($parsed['readability'])) {
+            return [
+                'score' => (int) round(($parsed['readability'] + $parsed['keyword_density'] + $parsed['heading_structure'] + $parsed['content_length'] + $parsed['engagement_potential']) / 5),
+                'readability' => (int) $parsed['readability'],
+                'keyword_density' => (int) $parsed['keyword_density'],
+                'heading_structure' => (int) $parsed['heading_structure'],
+                'content_length' => (int) $parsed['content_length'],
+                'engagement_potential' => (int) $parsed['engagement_potential'],
+                'suggestions' => $parsed['suggestions'] ?? [],
             ];
         }
 
@@ -126,6 +140,29 @@ class AIService
         return $response ?: $content;
     }
 
+    public function sanitizePrompt(string $prompt): string
+    {
+        if (mb_strlen($prompt) > 10000) {
+            $prompt = mb_substr($prompt, 0, 10000);
+        }
+
+        $blockedPatterns = [
+            '/ignore\s+previous/i',
+            '/forget\s+(all\s+)?(previous|instructions|guidelines)/i',
+            '/you\s+are\s+not\s+/i',
+            '/disregard/i',
+            '/system\s+prompt/i',
+        ];
+
+        foreach ($blockedPatterns as $pattern) {
+            if (preg_match($pattern, $prompt)) {
+                $prompt = preg_replace($pattern, '[REDACTED]', $prompt);
+            }
+        }
+
+        return $prompt;
+    }
+
     protected function callNvidiaApi(string $prompt): string
     {
         if (empty($this->apiKey)) {
@@ -133,6 +170,8 @@ class AIService
 
             return '';
         }
+
+        $prompt = $this->sanitizePrompt($prompt);
 
         try {
             $response = Http::withHeaders([
