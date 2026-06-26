@@ -4,6 +4,7 @@ namespace App\Services\AI;
 
 use App\Services\AiCacheService;
 use App\Services\Billing\UsageMeterService;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class AiGatewayService
@@ -22,6 +23,11 @@ class AiGatewayService
 
     public function generate(string $prompt, string $type = 'article', string $profile = 'balanced'): string
     {
+        if (!$this->checkRateLimit()) {
+            throw new \RuntimeException('AI rate limit reached. Please try again later.');
+        }
+
+        $prompt = $this->truncatePrompt($prompt);
         $tenantId = tenant_id();
         $profile = $this->modelProfiles[$profile] ?? $this->modelProfiles['balanced'];
 
@@ -50,6 +56,27 @@ class AiGatewayService
         });
 
         return $cachedResult;
+    }
+
+    private function checkRateLimit(): bool
+    {
+        $key = 'ai_rate_limit:' . date('Y-m-d-H');
+        $count = (int) Cache::get($key, 0);
+        if ($count >= config('ai.rate_limit', 50)) {
+            Log::warning('AI rate limit reached');
+            return false;
+        }
+        Cache::put($key, $count + 1, 3600);
+        return true;
+    }
+
+    private function truncatePrompt(string $prompt): string
+    {
+        $max = config('ai.max_prompt_chars', 500);
+        if (mb_strlen($prompt) <= $max) return $prompt;
+        $truncated = mb_substr($prompt, 0, $max);
+        $lastSpace = mb_strrpos($truncated, ' ');
+        return $lastSpace > 0 ? mb_substr($truncated, 0, $lastSpace) . '...' : $truncated . '...';
     }
 
     public function getProfile(string $name): ?array
