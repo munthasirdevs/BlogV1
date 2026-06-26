@@ -55,6 +55,9 @@
                 <a href="{{ route('admin.ai.index') }}" class="block px-4 py-2 text-sm rounded-md hover:bg-gray-100 dark:hover:bg-slate-800 {{ request()->routeIs('admin.ai.*') ? 'bg-indigo-50 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300' : '' }}" style="color: var(--color-text-body);">AI Tools</a>
                 <a href="{{ route('admin.analytics') }}" class="block px-4 py-2 text-sm rounded-md hover:bg-gray-100 dark:hover:bg-slate-800 {{ request()->routeIs('admin.analytics') ? 'bg-indigo-50 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300' : '' }}" style="color: var(--color-text-body);">Analytics</a>
                 <a href="{{ route('admin.settings.index') }}" class="block px-4 py-2 text-sm rounded-md hover:bg-gray-100 dark:hover:bg-slate-800 {{ request()->routeIs('admin.settings.*') ? 'bg-indigo-50 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300' : '' }}" style="color: var(--color-text-body);">Settings</a>
+                <div class="border-t my-2" style="border-color: var(--color-border);"></div>
+                <a href="{{ route('admin.system.info') }}" class="block px-4 py-2 text-sm rounded-md hover:bg-gray-100 dark:hover:bg-slate-800 {{ request()->routeIs('admin.system.*') ? 'bg-indigo-50 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300' : '' }}" style="color: var(--color-text-body);">System</a>
+                <a href="{{ route('admin.workflow') }}" class="block px-4 py-2 text-sm rounded-md hover:bg-gray-100 dark:hover:bg-slate-800 {{ request()->routeIs('admin.workflow') ? 'bg-indigo-50 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300' : '' }}" style="color: var(--color-text-body);">Workflow</a>
             </nav>
         </aside>
 

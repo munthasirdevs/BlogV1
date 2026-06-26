@@ -3,7 +3,7 @@
 @endphp
 
 <section class="mt-12">
-    <h3 class="mb-6 text-xl font-semibold" style="color: var(--color-text-heading)">{{ __('Comments') }} ({{ $post->comments()->approved()->count() }})</h3>
+    <h3 class="mb-6 text-xl font-semibold" style="color: var(--color-text-heading)">{{ __('Comments') }} ({{ $approvedComments->count() }})</h3>
 
     @if(session('success'))
         <div class="mb-4 rounded-md bg-green-50 p-4 text-sm text-green-800">
