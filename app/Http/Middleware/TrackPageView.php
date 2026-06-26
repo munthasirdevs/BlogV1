@@ -49,6 +49,9 @@ class TrackPageView
                 'visited_at' => now(),
             ]);
 
+            // If category page, increment category meta views (tracked via page_views with page_url)
+            // Category analytics are derived from page_views table grouped by page_url prefix
+
             // If post page, also record post view and increment counter
             if (preg_match('#^blog/(.+)$#', $request->path(), $matches)) {
                 $slug = $matches[1];

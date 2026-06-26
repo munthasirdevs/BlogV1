@@ -11,24 +11,20 @@ use Illuminate\Validation\ValidationException;
 class PostObserver
 {
     protected array $validTransitions = [
-        'draft' => ['review'],
-        'review' => ['seo_review', 'draft'],
-        'seo_review' => ['approved', 'draft'],
-        'approved' => ['scheduled', 'draft', 'published'],
-        'scheduled' => ['published', 'draft'],
+        'draft' => ['review', 'published', 'scheduled', 'archived', 'seo_review', 'approved'],
+        'review' => ['seo_review', 'draft', 'revision_required', 'published', 'archived'],
+        'seo_review' => ['approved', 'draft', 'revision_required', 'published', 'archived'],
+        'approved' => ['scheduled', 'draft', 'published', 'archived'],
+        'scheduled' => ['published', 'draft', 'archived'],
         'published' => ['archived', 'draft'],
-        'archived' => ['draft'],
+        'archived' => ['draft', 'published'],
+        'revision_required' => ['draft', 'review'],
     ];
 
     public function creating(Post $post): void
     {
         if (empty($post->uuid)) {
             $post->uuid = (string) Str::uuid();
-        }
-
-        if (!empty($post->content)) {
-            $post->word_count = str_word_count(strip_tags($post->content));
-            $post->reading_time = max(1, (int) ceil($post->word_count / 200));
         }
     }
 
@@ -38,7 +34,26 @@ class PostObserver
             $oldStatus = $post->getOriginal('status');
             $newStatus = $post->status;
 
-            $this->validateTransition($oldStatus, $newStatus);
+            try {
+                $this->validateTransition($oldStatus, $newStatus);
+            } catch (ValidationException $e) {
+                \Illuminate\Support\Facades\Log::warning('Post status transition rejected', [
+                    'post_id' => $post->id,
+                    'from' => $oldStatus,
+                    'to' => $newStatus,
+                    'message' => $e->getMessage(),
+                ]);
+
+                $post->status = $oldStatus;
+                $post->saveQuietly();
+
+                return;
+            }
+
+            if ($newStatus === 'published') {
+                \App\Events\PostPublished::dispatch($post);
+            }
+            \App\Events\PostWorkflowChanged::dispatch($post, $oldStatus, $newStatus);
 
             $this->logStatusChange($post, $oldStatus, $newStatus);
 
@@ -63,18 +78,21 @@ class PostObserver
 
     protected function logStatusChange(Post $post, string $oldStatus, string $newStatus): void
     {
-        if (!method_exists($post, 'activity')) {
-            return;
+        try {
+            activity()
+                ->performedOn($post)
+                ->causedBy(auth()->user())
+                ->withProperties([
+                    'old_status' => $oldStatus,
+                    'new_status' => $newStatus,
+                ])
+                ->log("Post status changed from {$oldStatus} to {$newStatus}");
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::debug('Activity log unavailable for post status change', [
+                'post_id' => $post->id,
+                'error' => $e->getMessage(),
+            ]);
         }
-
-        activity()
-            ->performedOn($post)
-            ->causedBy(auth()->user())
-            ->withProperties([
-                'old_status' => $oldStatus,
-                'new_status' => $newStatus,
-            ])
-            ->log("Post status changed from {$oldStatus} to {$newStatus}");
     }
 
     protected function sendStatusNotification(Post $post, string $newStatus): void

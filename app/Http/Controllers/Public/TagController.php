@@ -4,22 +4,32 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tag;
+use App\Services\CacheService;
+use App\Services\TagService;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class TagController extends Controller
 {
-    public function show(string $slug): View
+    public function __construct(
+        protected TagService $tagService,
+        protected CacheService $cacheService
+    ) {}
+
+    public function show(Request $request, string $slug): View
     {
-        $tag = Tag::where('slug', $slug)
-            ->active()
-            ->firstOrFail();
+        $data = $this->tagService->getWithPosts($slug, $request->get('sort', 'latest'));
+        $tag = $data['tag'];
+        $posts = $data['posts'];
+        $trendingTags = $data['trendingTags'];
 
-        $posts = $tag->posts()
-            ->published()
-            ->with('categories', 'tags', 'author')
-            ->orderBy('published_at', 'desc')
-            ->paginate(12);
+        $relatedTags = $tag->related(6);
+        $allTags = $this->tagService->getCloud();
 
-        return view('pages.blog.index', compact('tag', 'posts'));
+        if (!$tag->seo()->exists()) {
+            $tag->generateSeo();
+        }
+
+        return view('pages.tag.show', compact('tag', 'posts', 'trendingTags', 'relatedTags', 'allTags'));
     }
 }

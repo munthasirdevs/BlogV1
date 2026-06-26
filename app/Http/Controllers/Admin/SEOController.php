@@ -30,9 +30,10 @@ class SEOController extends Controller
 
         $lowScorePosts = Post::with('author', 'category')
             ->published()
-            ->where('seo_score', '<', 50)
-            ->orWhereNull('seo_score')
-            ->where('status', 'published')
+            ->where(function ($query) {
+                $query->where('seo_score', '<', 50)
+                    ->orWhereNull('seo_score');
+            })
             ->orderBy('seo_score')
             ->limit(10)
             ->get();
