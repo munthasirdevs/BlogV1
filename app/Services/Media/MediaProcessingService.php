@@ -38,9 +38,12 @@ class MediaProcessingService
         $fullPath = Storage::disk('public')->path($media->file_path);
         if (!file_exists($fullPath)) return;
 
+        $relInfo = pathinfo($media->file_path);
+        $relDir = $relInfo['dirname'];
+        $filename = $relInfo['filename'];
+
         $info = pathinfo($fullPath);
         $dir = $info['dirname'];
-        $filename = $info['filename'];
 
         $webpPath = $dir . '/' . $filename . '.webp';
         try {
@@ -56,9 +59,9 @@ class MediaProcessingService
 
             $media->update([
                 'variants' => [
-                    'thumbnail' => Storage::url($dir . '/' . $filename . '_thumb.webp'),
-                    'small' => Storage::url($dir . '/' . $filename . '_small.webp'),
-                    'medium' => Storage::url($dir . '/' . $filename . '_medium.webp'),
+                    'thumbnail' => Storage::url($relDir . '/' . $filename . '_thumb.webp'),
+                    'small' => Storage::url($relDir . '/' . $filename . '_small.webp'),
+                    'medium' => Storage::url($relDir . '/' . $filename . '_medium.webp'),
                 ],
                 'placeholder_blur' => $this->generateLqip($fullPath),
             ]);
