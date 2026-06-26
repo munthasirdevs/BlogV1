@@ -67,8 +67,17 @@
 
                         <div class="mb-4">
                             <label for="color" class="block text-sm font-medium" style="color: var(--color-text-body)">{{ __('Color') }}</label>
-                            <input type="text" name="color" id="color" value="{{ old('color') }}" class="mt-1 block w-full rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" style="border-color: var(--color-border)">
+                            <div class="mt-1 flex gap-2" x-data="{ color: '{{ old('color') }}' }">
+                                <input type="color" x-model="color" name="color" class="h-10 w-12 rounded cursor-pointer border" style="border-color: var(--color-border)">
+                                <input type="text" name="color" x-model="color" class="block w-full rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" style="border-color: var(--color-border)" placeholder="#3b82f6">
+                            </div>
                             @error('color') <p class="mt-1 text-sm" style="color: var(--color-error)">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="icon" class="block text-sm font-medium" style="color: var(--color-text-body)">{{ __('Icon (emoji or SVG path)') }}</label>
+                            <input type="text" name="icon" id="icon" value="{{ old('icon') }}" class="mt-1 block w-full rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" style="border-color: var(--color-border)" placeholder="🔧 or M12...">
+                            @error('icon') <p class="mt-1 text-sm" style="color: var(--color-error)">{{ $message }}</p> @enderror
                         </div>
 
                         <div class="flex items-center gap-4">

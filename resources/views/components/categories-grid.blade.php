@@ -12,7 +12,7 @@
             @forelse($categories as $cat)
             <a href="{{ route('category.show', $cat->slug) }}" class="group relative overflow-hidden rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5" style="background-color: var(--color-surface-card); border: 1px solid var(--color-border);">
                 <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl font-bold transition-transform duration-300 group-hover:scale-110" style="background-color: {{ $cat->color ?? 'var(--color-primary-100)' }}20; color: {{ $cat->color ?? 'var(--color-primary-600)' }};">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl font-bold transition-transform duration-300 group-hover:scale-110" style="background-color: color-mix(in srgb, {{ $cat->color ?? '#eef2ff' }} 20%, transparent); color: {{ $cat->color ?? 'var(--color-primary-600)' }};">
                         {{ strtoupper(substr($cat->name, 0, 1)) }}
                     </div>
                     <div>
