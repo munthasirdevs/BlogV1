@@ -3,18 +3,15 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
-use App\Models\Comment;
-use App\Models\Post;
+use App\Services\CommentService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class CommentController extends Controller
 {
-    protected array $spamKeywords = [
-        'buy now', 'click here', 'free money', 'earn money fast',
-        'viagra', 'casino', 'lottery', 'prize', 'discount',
-        'http://', 'https://', 'www.',
-    ];
+    public function __construct(
+        protected CommentService $commentService
+    ) {}
 
     public function store(Request $request): RedirectResponse
     {
@@ -26,43 +23,12 @@ class CommentController extends Controller
             'body' => ['required', 'string', 'min:2', 'max:5000'],
         ]);
 
-        $post = Post::published()->findOrFail($validated['post_id']);
-
-        $isSpam = $this->checkForSpam($validated['body']);
-
-        $comment = new Comment();
-        $comment->post_id = $post->id;
-        $comment->parent_id = $validated['parent_id'] ?? null;
-        $comment->body = $validated['body'];
-        $comment->status = $isSpam ? 'spam' : 'pending';
-        $comment->ip_address = $request->ip();
-
-        if (auth()->check()) {
-            $comment->user_id = auth()->id();
-        } else {
-            $comment->guest_name = $validated['guest_name'];
-            $comment->guest_email = $validated['guest_email'];
+        try {
+            $this->commentService->submit($validated, $request->ip());
+        } catch (\RuntimeException $e) {
+            return redirect()->back()->with('error', $e->getMessage());
         }
 
-        $comment->save();
-
-        $message = $isSpam
-            ? 'Your comment has been submitted and is being reviewed.'
-            : 'Your comment has been submitted and is pending approval.';
-
-        return redirect()->back()->with('success', $message);
-    }
-
-    protected function checkForSpam(string $body): bool
-    {
-        $bodyLower = mb_strtolower($body);
-
-        foreach ($this->spamKeywords as $keyword) {
-            if (str_contains($bodyLower, $keyword)) {
-                return true;
-            }
-        }
-
-        return false;
+        return redirect()->back()->with('success', 'Your comment has been submitted and is pending review.');
     }
 }
