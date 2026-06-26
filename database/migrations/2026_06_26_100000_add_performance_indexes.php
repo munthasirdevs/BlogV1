@@ -84,18 +84,30 @@ return new class extends Migration
         Schema::table('categories', function (Blueprint $table) {
             $table->dropIndex('idx_categories_tenant_slug');
             $table->dropColumn('posts_count');
+            if (Schema::hasColumn('categories', 'tenant_id')) {
+                $table->dropColumn('tenant_id');
+            }
         });
 
         Schema::table('tags', function (Blueprint $table) {
             $table->dropIndex('idx_tags_tenant_slug');
+            if (Schema::hasColumn('tags', 'tenant_id')) {
+                $table->dropColumn('tenant_id');
+            }
         });
 
         Schema::table('comments', function (Blueprint $table) {
             $table->dropIndex('idx_comments_tenant_post_status');
+            if (Schema::hasColumn('comments', 'tenant_id')) {
+                $table->dropColumn('tenant_id');
+            }
         });
 
         Schema::table('media_files', function (Blueprint $table) {
-            $table->dropIndexIfExists('idx_media_tenant_model');
+            $table->dropIndex('idx_media_tenant_model');
+            if (Schema::hasColumn('media_files', 'tenant_id')) {
+                $table->dropColumn('tenant_id');
+            }
         });
     }
 };

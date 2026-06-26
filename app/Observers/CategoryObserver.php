@@ -8,7 +8,7 @@ class CategoryObserver
 {
     public function created(Category $category): void
     {
-        $category->updateQuietly(['posts_count' => $category->posts()->count()]);
+        $category->updateQuietly(['posts_count' => 0]);
     }
 
     public function deleted(Category $category): void
